@@ -1,0 +1,23 @@
+{
+  "name": "lfp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fasoftw/lfpgames.git"
+  },
+  "author": "Débora C. / Gustavo Alves",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fasoftw/lfpgames/issues"
+  },
+  "homepage": "https://github.com/fasoftw/lfpgames#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1"
+  }
+}

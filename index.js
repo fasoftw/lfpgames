@@ -1,38 +1,24 @@
+const customExpress = require('./config/customExpress')
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-
-//teste
 const connection = require('./database/database');
 
 //Models
 const User = require("./src/models/User");
 
-connection
-    .authenticate()
+connection.authenticate()
     .then(() => {
+        const app = customExpress()
+
+        app.listen(3000, () => console.log('Servidor rodando na porta 3000'));
+
         console.log("Conexão feita com o banco de dados");
     })
     .catch((msgErro) => {
         console.log(msgErro);
     });
 
-
-
-
-
-
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-
-
-
-
 app.get('/', (req, res) => {
     res.send('<h1> Eu sou eu. </h1>')
 })
 
-app.listen(3000, () => {
-    console.log("APP RODANDO");
-
-});

@@ -13,4 +13,3 @@ const connection = new Sequelize ('lfpgames', 'root', 'root',{
 });
 
 module.exports = connection;
-

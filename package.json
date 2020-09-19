@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prestart" : "npm i",
+    "prestart": "npm i",
     "start": "node index"
   },
   "repository": {
@@ -20,6 +20,7 @@
   "homepage": "https://github.com/fasoftw/lfpgames#readme",
   "dependencies": {
     "body-parser": "^1.19.0",
+    "consign": "^0.1.6",
     "express": "^4.17.1",
     "mysql2": "^2.2.1",
     "sequelize": "^6.3.5"

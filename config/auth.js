@@ -1,5 +1,3 @@
-
-
 module.exports = (app) =>{
     var user = {
         id:1,

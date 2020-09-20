@@ -2,15 +2,18 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const connection = require('../database/database.js');
 
- const app = express();
+const app = express();
 
- const user = require('../src/app/models/User');
- 
+
  app.use(bodyParser.json());
  app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+
  
- const sessaoAutenticacao = require('./auth');
- sessaoAutenticacao(app);
+// const sessaoAutenticacao = require('./auth');
+// sessaoAutenticacao(app);
 
   connection.authenticate()
   .then(() => {

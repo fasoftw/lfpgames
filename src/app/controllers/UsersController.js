@@ -18,7 +18,8 @@ router.post("/users/create", (req, res) => {
     var nick = req.body.nick;
     var name = req.body.name;
 
-
+    console.log(email);
+    console.log(password);
     User.findOne({
         where: {
             email: email
@@ -32,16 +33,44 @@ router.post("/users/create", (req, res) => {
                 nick: nick,
                 name: name
             }).then(() => {
+                console.log("CadastroRealizado");
                 res.redirect("/admin/users");
             }).catch((err) => {
+                console.log("Erro no cadastro   ");
                 res.redirect("/admin/users");
             })
 
         } else {
+            console.log("Cadastro JÁ realizdo");
             res.redirect("/admin/users");
         }
     })
 
+})
+
+router.delete("/users/:id", (req, res) => {
+    var id = req.params.id;
+
+    User.findOne({
+        where: {
+            id: id
+        }
+    }).then(user => {
+        if (id != undefined) {
+            if (!isNaN(id)) { 
+                User.destroy({
+                    where: { id: id }
+                }).then(() => {
+                    res.redirect("/admin/users")
+                });
+            } else {
+                res.redirect("/admin/users")
+            }
+        }
+        else {  
+            res.redirect("/admin/users")
+        }
+    })
 })
 
 

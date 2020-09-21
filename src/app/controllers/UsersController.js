@@ -52,9 +52,6 @@ router.post("/users/create", (req, res) => {
 
 router.delete("/users/:id", (req, res) => {
     var id = req.params.id;
-    var teste = 1;
-    console.log(teste);
-    console.log(teste);
     User.findOne({
         where: {
             id: id

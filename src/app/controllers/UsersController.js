@@ -48,6 +48,8 @@ router.post("/users/create", (req, res) => {
 
 })
 
+//delete user
+
 router.delete("/users/:id", (req, res) => {
     var id = req.params.id;
 

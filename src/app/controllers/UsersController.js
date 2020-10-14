@@ -3,7 +3,7 @@ const router = express.Router();
 
 const User = require("../models/User");  // importando o model
 
-/*
+
 router.get("/admin/users", (req, res) => {
     User.findAll().then(users => {
         res.send({
@@ -11,7 +11,7 @@ router.get("/admin/users", (req, res) => {
         });
     });
 })
-*/
+
 router.post("/users/create", (req, res) => {
     var email = req.body.email;
     var password = req.body.password;

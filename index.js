@@ -1,19 +1,21 @@
-const app = require('./config/customExpress');
+const app = require('express')() 
+
+const db = require('./config/db')
+
+const consign = require('consign')
 
 
 
- //Controllers
- const usersController = require("./src/app/controllers/UsersController"); //importando as rotas do usuario
+app.db = db
+
+consign()
+    .include('./config/middlewares.js')
+    .include('./api/validation.js')
+    .include('./api')
+    .then('./config/routes.js')
+    .into(app)
 
 
- //Models
- const User = require("./src/app/models/User");
- 
-
-//Rotas
-app.use("/", usersController);  //Adicionando as rotas de usuarios
-
-
-app.listen(3000, function() {
-    console.log(`Servidor rodando na porta 3000`);
-});
+app.listen(4000, ()=>{
+    console.log("Backend Executando...");
+})

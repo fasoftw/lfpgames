@@ -1,7 +1,7 @@
 module.exports = app => {
 
     function existsOrError( value, msg ){
-        if(!value) throw '!value'  
+        if(!value) throw msg  
 
         console.log(value.trim())
 

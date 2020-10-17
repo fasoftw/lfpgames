@@ -9,6 +9,7 @@ const consign = require('consign')
 app.db = db
 
 consign()
+    .include('./config/passport.js')
     .include('./config/middlewares.js')
     .include('./api/validation.js')
     .include('./api')

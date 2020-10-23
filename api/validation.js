@@ -19,5 +19,13 @@ module.exports = app => {
         if( valueA !== valueB) throw msg
     }
 
-    return {existsOrError, notExistsOrError, equalsOrError}
+    function isNumber( value, msg){
+        if( typeof(value) !== 'number') throw msg
+    }
+
+    function isBoolean( value, msg){
+        if( typeof(value) !== 'boolean') throw msg
+    }
+
+    return {existsOrError, notExistsOrError, equalsOrError, isNumber, isBoolean}
 }

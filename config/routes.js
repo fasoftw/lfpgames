@@ -17,5 +17,13 @@ module.exports = app => {
         .get(app.api.user.getById)
         .put(app.api.user.save)
         .delete(app.api.user.remove)
+    
+    app.route('/games')
+        .post(app.api.games.save)
+        .get(app.api.games.get)
+
+    app.route('/categories')
+        .post(app.api.categories.save)
+        .get(app.api.categories.get)
 
 }

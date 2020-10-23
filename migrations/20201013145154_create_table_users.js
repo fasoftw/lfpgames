@@ -1,7 +1,11 @@
 //Tabela Users
-exports.up = function(knex) {
-    return knex.schema.createTable('users', table => {
+exports.up = async function(knex, Promise) {
+    await knex.schema.createTable('users', table => {
+        console.log('users')
         table.increments('id').primary()
+        table.dateTime('createdAt').nullable();
+        table.dateTime('updatedAt').nullable();
+        table.dateTime('deletedAt').nullable();
         table.string('name').notNull()
         table.string('email').notNull().unique()
         table.string('password').notNull()
@@ -10,6 +14,6 @@ exports.up = function(knex) {
     })
 };
 
-exports.down = function(knex) {
-    return knex.schema.dropTable('users')
+exports.down = async function(knex, Promise) {
+    await knex.schema.dropTable('users')
 };

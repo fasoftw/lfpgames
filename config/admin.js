@@ -1,6 +1,6 @@
 module.exports = middleware => {
     return ( req, res, next ) => {
-        console.log(req.user.name)
+        console.log(req.user)
         if(req.user.admin){
             middleware( req, res, next)
         }
@@ -9,3 +9,5 @@ module.exports = middleware => {
         }
     }
 }
+
+//Ideia do Middleware ADMIN, é em rotas que precisam estar logados.

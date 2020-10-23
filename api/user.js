@@ -43,20 +43,21 @@ module.exports = app => {
         
         user.password = encryptPassword(req.body.password)
 
+
         delete user.confirmPassword
 
         if(user.id){
             app.db('users')
                 .update(user)
                 .where({id: user.id})
-                .then(_ => res.status(204).send()) // 204: tudo certo, nao tem nenhum dado para retornar
-                .catch(err => res.status(500).send(err)) //500: erro lado servidor.
+                .then(_ => res.status(204).send()) 
+                .catch(err => res.status(500).send(err)) 
 
         }else{
             app.db('users')
                 .insert(user)
-                .then(_ => res.status(204).send()) // 204: tudo certo, nao tem nenhum dado para retornar
-                .catch(err => res.status(500).send(err)) //500: erro lado servidor.
+                .then(_ => res.status(204).send())
+                .catch(err => res.status(500).send(err)) 
 
         }
     }
@@ -80,8 +81,24 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     }
 
+    const remove = async ( req, res ) => {
+        try{
+            existsOrError(req.params.id, 'Código do usuário não informado.')
+            
+            const rowsDeleted = await app.db('users')
+                .where({ id: req.params.id }).del()
+            existsOrError(rowsDeleted, 'Usuário não foi encontrado.')
 
-    //Rota Remove
+            console.log(rowsDeleted)
+
+            res.status(204).send()
+        }catch(msg){
+            res.status(400).send(msg)
+        }
+        app.db('users')
+            .delete(user)
+            .where({id: user.id})
+    }
     
-    return { save, get, getById }
+    return { save, get, getById, remove }
 }

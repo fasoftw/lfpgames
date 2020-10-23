@@ -3,7 +3,12 @@ module.exports = app => {
     const { existsOrError, notExistsOrError, equalsOrError, isNumber, isBoolean }  = app.api.validation
 
     const save = async (req,res) => {
+
         const game = {...req.body}
+
+        const categoryFromDB = await app.db('categories')
+        .where({ id: game.categoryId }).first()
+
         try{
 
             existsOrError(game.name, 'Nome não informado')
@@ -14,17 +19,28 @@ module.exports = app => {
             existsOrError(game.rank, 'Rank do jogo não informado')
             isNumber(game.maxPlayers, 'Tipo esperado é number')
             isBoolean(game.rank, "Tipo esperado é booleano")
+
+            const gameFromDB = await app.db('games')
+            .where({ name: game.name }).first()
+
+         
+    
+            notExistsOrError(gameFromDB, 'Jogo já cadastrado')
+            existsOrError(categoryFromDB, 'Categoria não existe')
  
         } catch(err){
             res.status(400).send(err)
         }
 
         game.createdAt = new Date();
+     
 
-       app.db('games')
-        .insert(game)
-        .then(_ => res.status(201).send())
-
+        if(categoryFromDB){
+            app.db('games')
+            .insert(game)
+            .then(_ => res.status(201).send())
+            .catch(err => res.status(500).send(err))
+        }
 
     }
 

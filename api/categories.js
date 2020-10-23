@@ -7,6 +7,13 @@ module.exports = app => {
         try{
 
             existsOrError(category.name, 'Nome não informado')
+
+            const categoryFromDB = await app.db('categories')
+            .where({ name: category.name }).first()
+
+    
+            notExistsOrError(categoryFromDB, 'Categoria já cadastrada')
+
  
         } catch(err){
             res.status(400).send(err)

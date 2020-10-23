@@ -9,7 +9,7 @@ const { Strategy, ExtractJwt } = passportJwt
 module.exports = app => {
     const params = {
         secretOrKey: authSecret,
-        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken() //Vai extrair token do request
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
     }
 
     const strategy = new Strategy(params, (payload, done) => {

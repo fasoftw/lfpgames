@@ -5,8 +5,6 @@ module.exports = app => {
     const save = async (req,res) => {
         const filter = {...req.body}
 
-     
-
 
         try{
 
@@ -16,6 +14,9 @@ module.exports = app => {
            
             const categoryFromDB = await app.db('categories')
             .where({ id: filter.categoryId }).first()
+            .catch(err =>
+                res.status(400).send(err)
+            )
 
             existsOrError(categoryFromDB, 'Categoria não existe')
     

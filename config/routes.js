@@ -21,9 +21,20 @@ module.exports = app => {
     app.route('/games')
         .post(app.api.games.save)
         .get(app.api.games.get)
+      
+
+    app.route('/games/:id')
+        .put(app.api.games.save)
+        .delete(app.api.games.remove)
+
 
     app.route('/categories')
         .post(app.api.categories.save)
         .get(app.api.categories.get)
 
+    app.route('/filters')
+        .post(app.api.filters.save)
+        .get(app.api.filters.get)
+
+  
 }

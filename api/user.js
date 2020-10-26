@@ -68,6 +68,7 @@ module.exports = app => {
     const get = ( req, res ) =>{
         app.db('users')
             .select('id', 'name', 'email', 'password', 'admin')
+            .whereNull('deletedAt')
             .then(users => res.json(users))
             .catch(err => res.status(500).send(err))
     }
@@ -76,6 +77,7 @@ module.exports = app => {
         app.db('users')
             .select('id', 'name', 'email', 'password', 'admin')
             .where({id: req.params.id})
+            .whereNull('deletedAt')
             .first()
             .then(user => res.json(user))
             .catch(err => res.status(500).send(err))
@@ -84,20 +86,16 @@ module.exports = app => {
     const remove = async ( req, res ) => {
         try{
             existsOrError(req.params.id, 'Código do usuário não informado.')
-            
-            const rowsDeleted = await app.db('users')
-                .where({ id: req.params.id }).del()
-            existsOrError(rowsDeleted, 'Usuário não foi encontrado.')
 
-            console.log(rowsDeleted)
+            const rowsUpdated = await app.db('users')
+                .update({deletedAt: new Date()})
+                .where({ id: req.params.id })
+            existsOrError(rowsUpdated, 'Usuário não foi encontrado.')
 
             res.status(204).send()
         }catch(msg){
             res.status(400).send(msg)
         }
-        app.db('users')
-            .delete(user)
-            .where({id: user.id})
     }
     
     return { save, get, getById, remove }

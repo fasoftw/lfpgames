@@ -9,8 +9,9 @@ module.exports = app => {
 
         const categoryFromDB = await app.db('categories')
         .where({ id: game.categoryId }).first()
-
-
+        .catch(err =>
+            res.status(400).send(err)
+        )
 
         try{
 
@@ -26,6 +27,9 @@ module.exports = app => {
             const gameFromDB = await app.db('games')
             .where({ name: game.name })
             .whereNull('deletedAt').first()
+            .catch(err =>
+                res.status(400).send(err)
+            )
 
          
             if(!id){
@@ -61,7 +65,7 @@ module.exports = app => {
     }
 
     const get = (req,res) =>{
-        const teste = app.db('games')
+         app.db('games')
         .select('*')
         .whereNull('deletedAt')
         .then(games => res.json(games))
@@ -77,11 +81,17 @@ module.exports = app => {
             .update({deletedAt: new Date()})
             .where({ gameId: req.params.id })
             existsOrError(filtersUpdated, 'Filtro não foi encontrado.')
+            .catch(err =>
+                res.status(400).send(err)
+            )
 
             const rowsUpdated = await app.db('games')
             .update({deletedAt: new Date()})
             .where({ id: req.params.id })
             existsOrError(rowsUpdated, 'Game não foi encontrado.')
+            .catch(err =>
+                res.status(400).send(err)
+            )
 
             res.status(204).send()
             } catch(err){

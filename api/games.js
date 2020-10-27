@@ -13,7 +13,6 @@ module.exports = app => {
 
 
         try{
-
             existsOrError(game.name, 'Nome não informado')
             existsOrError(game.imageUrl, 'Imagem não informada')
             existsOrError(game.description, 'Descrição não informada')

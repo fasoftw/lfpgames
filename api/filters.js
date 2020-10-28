@@ -23,7 +23,7 @@ module.exports = app => {
 
             console.log(filter)
         }catch(err){
-            res.status(400).send(err)
+            return res.status(400).send(err)
         }
 
         if(!req.params.id){

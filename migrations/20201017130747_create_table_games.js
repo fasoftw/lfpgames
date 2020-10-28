@@ -12,7 +12,9 @@ exports.up = async function(knex) {
             .inTable('categories').notNull().onDelete('CASCADE')
         table.integer('maxPlayers').notNull()
         table.boolean('rank').notNull().defaultTo(false)
-        table.integer('levelMax') 
+        table.integer('levelMax')
+        table.integer('plataformGameId').unsigned().references('id')
+            .inTable('platforms_games').notNull().onDelete('CASCADE')
         })
 };
 

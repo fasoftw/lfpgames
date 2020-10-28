@@ -10,6 +10,8 @@ exports.up = async function(knex, Promise) {
         table.integer('categoryId').unsigned().references('id')
         .inTable('categories').notNull().onDelete('CASCADE')
         table.string('name').notNull()
+        table.string('fillField')
+        table.boolean('notNull')
     })
 };
 

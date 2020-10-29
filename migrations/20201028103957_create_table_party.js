@@ -2,6 +2,9 @@
 exports.up = async function(knex, Promise) {
     await knex.schema.createTable('party', table=>{
         table.increments('id').primary()
+        table.dateTime('createdAt').nullable()
+        table.dateTime('updatedAt').nullable()
+        table.dateTime('deletedAt').nullable()
         table.integer('gameId').unsigned().references('id')
         .inTable('games').notNull()
         table.integer('platformId').unsigned().references('id')

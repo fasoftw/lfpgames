@@ -27,6 +27,9 @@ module.exports = app => {
         .put(app.api.games.save)
         .delete(app.api.games.remove)
 
+    app.route('/platforms')
+        .get(app.api.platforms.get)
+
 
     app.route('/categories')
         .post(app.api.categories.save)

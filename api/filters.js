@@ -14,14 +14,10 @@ module.exports = app => {
            
             const categoryFromDB = await app.db('categories')
             .where({ id: filter.categoryId }).first()
-            .catch(err =>
-                res.status(400).send(err)
-            )
 
             existsOrError(categoryFromDB, 'Categoria não existe')
     
 
-            console.log(filter)
         }catch(err){
             return res.status(400).send(err)
         }

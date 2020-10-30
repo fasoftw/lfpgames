@@ -99,11 +99,14 @@ module.exports = app => {
     }
 
     const addPlatform = async(id,plataforms) =>{
-                     
+                 
         if(plataforms){
+            console.log(" id: "+ id + "... " + plataforms)    
             await plataforms.forEach(item => {
                 app.db('platforms_games')
-                .insert({createdAt: new Date(),gameId: id, platformId: item }) 
+                .insert({createdAt: new Date(),gameId: id, platformId: item })
+                .then(_ => console.log('cadastrado'))
+                .catch(err => console.log(err)) 
             });
         }
         

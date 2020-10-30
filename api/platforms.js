@@ -11,6 +11,7 @@ module.exports = app => {
         app.db("platforms_games")
         .select('platforms_games.*','platforms.name')
         .join("platforms", "platforms.id", "platforms_games.platformId")
+        .whereNull("platforms_games.deletedAt")
         .where({"platforms_games.gameId": req.params.id})
         .groupBy('platforms_games.platformId')
         .then(platforms => res.json(platforms))

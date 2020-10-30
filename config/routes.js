@@ -28,8 +28,10 @@ module.exports = app => {
         .delete(app.api.games.remove)
 
     app.route('/platforms')
-        .get(app.api.platforms.get)
-
+        .get(app.api.platforms.get)      
+    
+    app.route('/platforms/:id')
+        .get(app.api.platforms.getByIdGame)
 
     app.route('/categories')
         .post(app.api.categories.save)

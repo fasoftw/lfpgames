@@ -1,21 +1,14 @@
 module.exports = app => {
     
-    const { existsOrError, notExistsOrError, equalsOrError, isNumber, isBoolean }  = app.api.validation
+    const { existsOrError}  = app.api.validation
 
     const save = async (req,res) => {
         const filter = {...req.body}
 
-
         try{
 
-            existsOrError(filter.categoryId, 'Categoria não informada')
             existsOrError(filter.name, 'Nome do filtro não informado')
-            existsOrError(filter.gameId, 'Nome do game não informado')
-           
-            const categoryFromDB = await app.db('categories')
-            .where({ id: filter.categoryId }).first()
-
-            existsOrError(categoryFromDB, 'Categoria não existe')
+            existsOrError(filter.gameId, 'Nome do game não informado')                   
     
 
         }catch(err){

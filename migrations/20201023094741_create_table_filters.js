@@ -7,8 +7,6 @@ exports.up = async function(knex, Promise) {
         table.dateTime('deletedAt').nullable()
         table.integer('gameId').unsigned().references('id')
         .inTable('games').notNull().onDelete('CASCADE')
-        table.integer('categoryId').unsigned().references('id')
-        .inTable('categories').notNull().onDelete('CASCADE')
         table.string('name').notNull()
         table.string('fillField')
         table.boolean('notNull')

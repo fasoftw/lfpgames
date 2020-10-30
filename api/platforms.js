@@ -7,5 +7,16 @@ module.exports = app => {
         .catch(err => res.status(500).send(err))
     }
 
-    return {get}
+    const getByIdGame = (req,res) =>{
+        app.db("platforms_games")
+        .select('platforms_games.*','platforms.name')
+        .join("platforms", "platforms.id", "platforms_games.platformId")
+        .where({"platforms_games.gameId": req.params.id})
+        .groupBy('platforms_games.platformId')
+        .then(platforms => res.json(platforms))
+        .catch(err => res.status(500).send(err))
+        
+    }
+
+    return {get,getByIdGame}
 }

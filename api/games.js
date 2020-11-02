@@ -1,6 +1,6 @@
 module.exports = app => {
     
-    const { existsOrError, notExistsOrError, isNumber, isBoolean, existsOrErrorPlatform }  = app.api.validation
+    const { existsOrError, notExistsOrError }  = app.api.validation
 
     const save = async (req,res) => {
         const game = {...req.body}
@@ -11,46 +11,34 @@ module.exports = app => {
             existsOrError(game.description, 'Descrição não informada')
             existsOrError(game.categoryId, 'Categoria não informada.')
             existsOrError(game.maxPlayers, 'Número máximo de jogadores não informado')
- //           isNumber(game.maxPlayers, 'Tipo esperado é number')
- //           isBoolean(game.rank, "Tipo esperado é booleano")
             existsOrError(game.platforms, 'Plataforma não informada')
             
             const gameFromDB = await app.db('games')
                 .where({ name: game.name })
                 .whereNull('deletedAt')
                 .first()  
+
             if(!id){ // se no existir id é edit
                  notExistsOrError(gameFromDB, 'Jogo já cadastrado')
             }   
-            
-            const platformsFromGame = await app.db('platforms_games')
-                .where({ gameId: req.params.id })
-            
-            const verifyPlatforms = await game.platforms.forEach(gamePlatform => {
-                platformsFromGame.forEach( platformDB => {
-                    const equal = platformDB.platformId === gamePlatform ? `plataforma ${gamePlatform} já cadastrada` : false  
-                    
-                })
-            })
-                   
-                
-            notExistsOrError(platformsFromGame, 'Jogo já tem essa plataforma.')
-
 
         }catch(err){
             return res.status(400).send(err)
         }
-        let idGame;
         
         if(!id){
             game.createdAt = new Date();
             
             await app.db('games')
-            .insert({categoryId: game.categoryId,name: game.name, createdAt: game.createdAt, description: game.description,
-                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, levelMax: game.levelMax})
+            .insert({categoryId: game.categoryId,name: game.name, createdAt: game.createdAt, 
+                description: game.description,
+                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, 
+                levelMax: game.levelMax})
             .then(_resposta =>{ 
-                res.status(201).send(_resposta) 
-                idGame = _resposta      
+
+                res.status(201).send(_resposta)   
+                addPlatform(_resposta ,game.platforms,res)  
+
             }).catch(err => res.status(500).send(err))
             
    
@@ -58,19 +46,21 @@ module.exports = app => {
         } else{
             game.updatedAt = new Date();
             await app.db('games')
-            .update({categoryId: game.categoryId,name: game.name, updatedAt: game.updatedAt, description: game.description,
-                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, levelMax: game.levelMax})
+            .update({categoryId: game.categoryId,name: game.name, updatedAt: game.updatedAt, 
+                description: game.description,
+                imageUrl: game.imageUrl, rank: game.rank , 
+                maxPlayers: game.maxPlayers, levelMax: game.levelMax})
             .where({id : id})
             .whereNull('deletedAt')
             .then(_ =>{
                  res.status(201).send()
-                 idGame = id
+                 editPlatform(id ,game.platforms)
                 }
             )
             .catch(err => res.status(500).send(err))
         }
 
-        addPlatform(idGame,game.platforms,res)
+       
     
     }
 
@@ -117,6 +107,24 @@ module.exports = app => {
             app.db('platforms_games')
             .insert({createdAt: new Date(),gameId: id, platformId: item })
             .then(_ => console.log('cadastrado'))
+            .catch(err => console.log(err)) 
+        });
+        
+    }
+
+    const editPlatform = async( id, platforms) =>{
+
+        await app.db('platforms_games')
+        .delete()
+        .where({gameId: id})
+        .then(res => console.log(res))
+        .catch( err => res.send(204).send(err))
+ 
+
+        await platforms.forEach(item => {
+            app.db('platforms_games')
+            .insert({updatedAt: new Date(), gameId: id, platformId: item })
+            .then(res => res.send(400).send())
             .catch(err => console.log(err)) 
         });
         

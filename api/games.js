@@ -1,6 +1,6 @@
 module.exports = app => {
     
-    const { existsOrError, notExistsOrError, isNumber, isBoolean }  = app.api.validation
+    const { existsOrError, notExistsOrError, isNumber, isBoolean, existsOrErrorPlatform }  = app.api.validation
 
     const save = async (req,res) => {
         const game = {...req.body}
@@ -11,18 +11,32 @@ module.exports = app => {
             existsOrError(game.description, 'Descrição não informada')
             existsOrError(game.categoryId, 'Categoria não informada.')
             existsOrError(game.maxPlayers, 'Número máximo de jogadores não informado')
-            isNumber(game.maxPlayers, 'Tipo esperado é number')
-            isBoolean(game.rank, "Tipo esperado é booleano")
+ //           isNumber(game.maxPlayers, 'Tipo esperado é number')
+ //           isBoolean(game.rank, "Tipo esperado é booleano")
             existsOrError(game.platforms, 'Plataforma não informada')
             
             const gameFromDB = await app.db('games')
                 .where({ name: game.name })
                 .whereNull('deletedAt')
-                .first()
-                
+                .first()  
             if(!id){ // se no existir id é edit
                  notExistsOrError(gameFromDB, 'Jogo já cadastrado')
-            }         
+            }   
+            
+            const platformsFromGame = await app.db('platforms_games')
+                .where({ gameId: req.params.id })
+            
+            const verifyPlatforms = await game.platforms.forEach(gamePlatform => {
+                platformsFromGame.forEach( platformDB => {
+                    const equal = platformDB.platformId === gamePlatform ? `plataforma ${gamePlatform} já cadastrada` : false  
+                    
+                })
+            })
+                   
+                
+            notExistsOrError(platformsFromGame, 'Jogo já tem essa plataforma.')
+
+
         }catch(err){
             return res.status(400).send(err)
         }
@@ -33,7 +47,7 @@ module.exports = app => {
             
             await app.db('games')
             .insert({categoryId: game.categoryId,name: game.name, createdAt: game.createdAt, description: game.description,
-                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers})
+                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, levelMax: game.levelMax})
             .then(_resposta =>{ 
                 res.status(201).send(_resposta) 
                 idGame = _resposta      
@@ -45,7 +59,7 @@ module.exports = app => {
             game.updatedAt = new Date();
             await app.db('games')
             .update({categoryId: game.categoryId,name: game.name, updatedAt: game.updatedAt, description: game.description,
-                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers})
+                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, levelMax: game.levelMax})
             .where({id : id})
             .whereNull('deletedAt')
             .then(_ =>{
@@ -68,7 +82,7 @@ module.exports = app => {
         .catch(err => res.status(500).send(err))
     }
 
-    const remove = async (req,res) =>{        
+    const remove = async ( req, res) =>{        
 
         try{
             existsOrError(req.params.id, 'Código do game não informado.')
@@ -98,17 +112,13 @@ module.exports = app => {
             }
     }
 
-    const addPlatform = async(id,plataforms) =>{
-                 
-        if(plataforms){
-            console.log(" id: "+ id + "... " + plataforms)    
-            await plataforms.forEach(item => {
-                app.db('platforms_games')
-                .insert({createdAt: new Date(),gameId: id, platformId: item })
-                .then(_ => console.log('cadastrado'))
-                .catch(err => console.log(err)) 
-            });
-        }
+    const addPlatform = async( id, platforms) =>{
+        await platforms.forEach(item => {
+            app.db('platforms_games')
+            .insert({createdAt: new Date(),gameId: id, platformId: item })
+            .then(_ => console.log('cadastrado'))
+            .catch(err => console.log(err)) 
+        });
         
     }
    

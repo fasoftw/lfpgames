@@ -8,9 +8,9 @@ module.exports = app => {
 
     
     app.route('/users')
-        .all(app.config.passport.authenticate())
-        .get(admin(app.api.user.get))
-//        .get(app.api.user.get)
+ //       .all(app.config.passport.authenticate())
+ //       .get(admin(app.api.user.get))
+        .get(app.api.user.get)
         .post(app.api.user.save)
     
     app.route('/users/:id')
@@ -27,6 +27,11 @@ module.exports = app => {
         .put(app.api.games.save)
         .delete(app.api.games.remove)
 
+    app.route('/platforms')
+        .get(app.api.platforms.get)      
+    
+    app.route('/platforms/:id')
+        .get(app.api.platforms.getByIdGame)
 
     app.route('/categories')
         .post(app.api.categories.save)

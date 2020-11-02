@@ -1,66 +1,67 @@
 module.exports = app => {
     
-    const { existsOrError, notExistsOrError, equalsOrError, isNumber, isBoolean }  = app.api.validation
+    const { existsOrError, notExistsOrError, isNumber, isBoolean }  = app.api.validation
 
     const save = async (req,res) => {
-
         const game = {...req.body}
         const id = req.params.id
-
-        const categoryFromDB = await app.db('categories')
-        .where({ id: game.categoryId }).first()
-
-
-
         try{
             existsOrError(game.name, 'Nome não informado')
             existsOrError(game.imageUrl, 'Imagem não informada')
             existsOrError(game.description, 'Descrição não informada')
-            existsOrError(game.categoryId, 'Categoria não informada')
+            existsOrError(game.categoryId, 'Categoria não informada.')
             existsOrError(game.maxPlayers, 'Número máximo de jogadores não informado')
             isNumber(game.maxPlayers, 'Tipo esperado é number')
             isBoolean(game.rank, "Tipo esperado é booleano")
+            existsOrError(game.platforms, 'Plataforma não informada')
             
-
             const gameFromDB = await app.db('games')
-            .where({ name: game.name })
-            .whereNull('deletedAt').first()
-
-         
-            if(!id){
-                 notExistsOrError(gameFromDB, 'Jogo já cadastrado')
-            }
-            existsOrError(categoryFromDB, 'Categoria não existe')
- 
-        } catch(err){
-            res.status(400).send(err)
-        }
-
-      
-     
-
-        if(categoryFromDB){
-            if(!id){
-                game.createdAt = new Date();
-                app.db('games')
-                .insert(game)
-                .then(_ => res.status(201).send())
-                .catch(err => res.status(500).send(err))
-            } else{
-                game.updatedAt = new Date();
-                app.db('games')
-                .update(game)
-                .where({id : id})
+                .where({ name: game.name })
                 .whereNull('deletedAt')
-                .then(_ => res.status(201).send())
-                .catch(err => res.status(500).send(err))
-            }
+                .first()
+                
+            if(!id){ // se no existir id é edit
+                 notExistsOrError(gameFromDB, 'Jogo já cadastrado')
+            }         
+        }catch(err){
+            return res.status(400).send(err)
+        }
+        let idGame;
+        
+        if(!id){
+            game.createdAt = new Date();
+            
+            await app.db('games')
+            .insert({categoryId: game.categoryId,name: game.name, createdAt: game.createdAt, description: game.description,
+                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers})
+            .then(_resposta =>{ 
+                res.status(201).send(_resposta) 
+                idGame = _resposta      
+            }).catch(err => res.status(500).send(err))
+            
+   
+           
+        } else{
+            game.updatedAt = new Date();
+            await app.db('games')
+            .update({categoryId: game.categoryId,name: game.name, updatedAt: game.updatedAt, description: game.description,
+                imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers})
+            .where({id : id})
+            .whereNull('deletedAt')
+            .then(_ =>{
+                 res.status(201).send()
+                 idGame = id
+                }
+            )
+            .catch(err => res.status(500).send(err))
         }
 
+        addPlatform(idGame,game.platforms,res)
+    
     }
 
     const get = (req,res) =>{
-        const teste = app.db('games')
+         app.db('games')
         .select('*')
         .whereNull('deletedAt')
         .then(games => res.json(games))
@@ -72,22 +73,43 @@ module.exports = app => {
         try{
             existsOrError(req.params.id, 'Código do game não informado.')
 
-            const filtersUpdated = await app.db('filters')
+             await app.db('filters')
             .update({deletedAt: new Date()})
             .where({ gameId: req.params.id })
-            existsOrError(filtersUpdated, 'Filtro não foi encontrado.')
 
+
+            const platformsUpdated = await app.db('platforms_games')
+            .update({deletedAt: new Date()})
+            .where({ gameId: req.params.id })
+            existsOrError(platformsUpdated, 'Plataforma não foi encontrada.')
+
+           
             const rowsUpdated = await app.db('games')
             .update({deletedAt: new Date()})
             .where({ id: req.params.id })
             existsOrError(rowsUpdated, 'Game não foi encontrado.')
 
-            res.status(204).send()
+             res.status(204).send()
+
             } catch(err){
 
-                res.status(400).send(err)
+                return res.status(400).send(err)
 
             }
+    }
+
+    const addPlatform = async(id,plataforms) =>{
+                 
+        if(plataforms){
+            console.log(" id: "+ id + "... " + plataforms)    
+            await plataforms.forEach(item => {
+                app.db('platforms_games')
+                .insert({createdAt: new Date(),gameId: id, platformId: item })
+                .then(_ => console.log('cadastrado'))
+                .catch(err => console.log(err)) 
+            });
+        }
+        
     }
    
 

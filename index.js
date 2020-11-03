@@ -4,8 +4,6 @@ const db = require('./config/db')
 
 const consign = require('consign')
 
-require('dotenv').config()
-
 
 
 app.db = db

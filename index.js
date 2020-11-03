@@ -4,6 +4,8 @@ const db = require('./config/db')
 
 const consign = require('consign')
 
+require('dotenv').config()
+
 
 
 app.db = db
@@ -17,6 +19,6 @@ consign()
     .into(app)
 
 
-app.listen(4000, ()=>{
+app.listen(3000, ()=>{
     console.log("Backend Executando...");
 })

@@ -7,7 +7,7 @@ exports.up = async function(knex, Promise) {
         table.dateTime('updatedAt').nullable();
         table.dateTime('deletedAt').nullable();
         table.string('name').notNull()
-        table.string('email').notNull().unique()
+        table.string('email').notNull()
         table.string('password').notNull()
         table.string('imageUrl', 1000)
         table.boolean('admin').notNull().defaultTo(false) 

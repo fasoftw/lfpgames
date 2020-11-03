@@ -5,6 +5,7 @@ exports.up = async function(knex, Promise) {
         table.dateTime('createdAt').nullable()
         table.dateTime('updatedAt').nullable()
         table.dateTime('deletedAt').nullable()
+        table.string('name').notNull()
         table.integer('gameId').unsigned().references('id')
         .inTable('games').notNull()
         table.integer('platformId').unsigned().references('id')

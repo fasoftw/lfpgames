@@ -28,14 +28,12 @@ module.exports = app => {
         
         if(!id){
             game.createdAt = new Date();
-            
             await app.db('games')
             .insert({categoryId: game.categoryId,name: game.name, createdAt: game.createdAt, 
                 description: game.description,
                 imageUrl: game.imageUrl, rank: game.rank , maxPlayers: game.maxPlayers, 
                 levelMax: game.levelMax})
             .then(_resposta =>{ 
-
                 res.status(201).send(_resposta)   
                 addPlatform(_resposta ,game.platforms,res)  
 
@@ -48,7 +46,7 @@ module.exports = app => {
             await app.db('games')
             .update({categoryId: game.categoryId,name: game.name, updatedAt: game.updatedAt, 
                 description: game.description,
-                imageUrl: game.imageUrl, rank: game.rank , 
+                imageUrl: game.imageUrl, rank: game.rank, 
                 maxPlayers: game.maxPlayers, levelMax: game.levelMax})
             .where({id : id})
             .whereNull('deletedAt')

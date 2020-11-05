@@ -29,9 +29,32 @@ module.exports = app => {
     const get = async(req, res) =>{
         const cat = app.db('categories')
         .select('*')
+        .whereNull('deletedAt')
         .then(categories => res.json(categories))
         .catch(err => res.status(500).send(err))
     }
-    return {save,get}
+
+    const remove = async ( req, res) =>{        
+        console.log(req.data)
+        try{
+            existsOrError(req.params.id, 'Código do game não informado.')
+
+
+           
+            const rowsUpdated = await app.db('categories')
+            .update({deletedAt: new Date()})
+            .where({ id: req.params.id })
+            existsOrError(rowsUpdated, 'Categoria não foi encontrado.')
+
+             res.status(204).send()
+
+            } catch(err){
+
+                return res.status(400).send(err)
+
+            }
+    }
+    
+    return {save,get,remove}
 }
 

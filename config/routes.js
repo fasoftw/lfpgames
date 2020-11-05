@@ -36,10 +36,21 @@ module.exports = app => {
     app.route('/categories')
         .post(app.api.categories.save)
         .get(app.api.categories.get)
+    
+    app.route('/categories/:id')
+        .put(app.api.categories.save)
+        .delete(app.api.categories.remove)
 
     app.route('/filters')
         .post(app.api.filters.save)
         .get(app.api.filters.get)
 
-  
+
+    app.route('/parties')
+        .post(app.api.parties.save)
+        .get(app.api.parties.get)
+    
+        app.route('/parties/:id')
+        .put(app.api.parties.save)
+
 }

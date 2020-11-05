@@ -26,6 +26,7 @@ module.exports = app => {
     app.route('/games/:id')
         .put(app.api.games.save)
         .delete(app.api.games.remove)
+        .get(app.api.games.getById)
 
     app.route('/platforms')
         .get(app.api.platforms.get)      
@@ -53,4 +54,5 @@ module.exports = app => {
         app.route('/parties/:id')
         .put(app.api.parties.save)
 
+  
 }

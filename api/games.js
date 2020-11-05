@@ -127,8 +127,18 @@ module.exports = app => {
         });
         
     }
+
+    const getById = ( req, res ) => {
+        app.db('games')
+            .where({ id: req.params.id })
+            .first()
+            .then(game => {
+                return res.json(game)    
+            })
+            .catch(err => res.status(500).send(err))
+    }
    
 
-    return {save,get, remove}
+    return {save,get, remove, getById}
 }
 

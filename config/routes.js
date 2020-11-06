@@ -46,6 +46,9 @@ module.exports = app => {
         .post(app.api.filters.save)
         .get(app.api.filters.get)
 
+    app.route('/filters/:id')
+        .get(app.api.filters.getByIdGame)
+
 
     app.route('/parties')
         .post(app.api.parties.save)

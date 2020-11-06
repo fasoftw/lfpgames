@@ -35,7 +35,8 @@ module.exports = app => {
                 levelMax: game.levelMax})
             .then(_resposta =>{ 
                 res.status(201).send(_resposta)   
-                addPlatform(_resposta ,game.platforms,res)  
+                addPlatform(_resposta ,game.platforms,res)
+                addFilters(_resposta ,game.filters,res)    
 
             }).catch(err => res.status(500).send(err))
             
@@ -53,6 +54,7 @@ module.exports = app => {
             .then(_ =>{
                  res.status(201).send()
                  editPlatform(id ,game.platforms)
+                 editFilter(id ,game.filters)
                 }
             )
             .catch(err => res.status(500).send(err))
@@ -104,7 +106,7 @@ module.exports = app => {
         await platforms.forEach(item => {
             app.db('platforms_games')
             .insert({createdAt: new Date(),gameId: id, platformId: item })
-            .then(_ => console.log('cadastrado'))
+            .then( () => console.log('cadastrado'))
             .catch(err => console.log(err)) 
         });
         
@@ -116,13 +118,42 @@ module.exports = app => {
         .delete()
         .where({gameId: id})
         .then(res => console.log(res))
-        .catch( err => res.send(204).send(err))
+        .catch( err => res.status(204).send(err))
  
 
         await platforms.forEach(item => {
             app.db('platforms_games')
             .insert({updatedAt: new Date(), gameId: id, platformId: item })
-            .then(res => res.send(400).send())
+            .then(res => console.log(res))
+            .catch(err => console.log(err)) 
+        });
+        
+    }
+
+    const addFilters = async( id, filters) =>{
+        console.log(filters)
+        await filters.forEach(item => {
+            app.db('filters')
+            .insert({createdAt: new Date(),gameId: id, name: item })
+            .then( () => console.log('cadastrado'))
+            .catch(err => console.log(err)) 
+        });
+        
+    }
+
+    const editFilter = async( id, filters) =>{
+
+        await app.db('filters')
+        .delete()
+        .where({gameId: id})
+        .then(res => console.log(res))
+        .catch( err => res.status(500).send(err))
+ 
+
+        await filters.forEach(item => {
+            app.db('filters')
+            .insert({updatedAt: new Date(), gameId: id, name: item})
+            .then(res => console.log(res))
             .catch(err => console.log(err)) 
         });
         

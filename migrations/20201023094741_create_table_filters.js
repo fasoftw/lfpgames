@@ -8,8 +8,6 @@ exports.up = async function(knex, Promise) {
         table.integer('gameId').unsigned().references('id')
         .inTable('games').notNull().onDelete('CASCADE')
         table.string('name').notNull()
-        table.string('fillField')
-        table.boolean('notNull')
     })
 };
 

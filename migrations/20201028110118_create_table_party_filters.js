@@ -8,7 +8,6 @@ exports.up = async function(knex, Promise) {
        table.integer('partyId').unsigned().references('id')
        .inTable('party').notNull().onDelete('CASCADE')
        table.string('name').notNull()
-       table.string('fillField')
    })
 };
 

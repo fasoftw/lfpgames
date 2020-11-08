@@ -12,6 +12,9 @@ module.exports = app => {
             existsOrError(party.gameId,'Jogo não informado.')
             existsOrError(party.platformId,'Plataforma não informado.')
             existsOrError(party.numberPlayers,'Numero de players não informado.')
+            existsOrError(party.isOpen,'Erro!')
+            existsOrError(party.filters,'Numero de players não informado.')
+
             
 /*            const verNameParty = await app.db('party')
                 .where({ name: party.name }).first()
@@ -43,13 +46,19 @@ module.exports = app => {
             app.db('party')
                 .update(party)
                 .where({ id: party.id })
-                .then(() => res.status(204).send()) 
+                .then(resposta => {
+                    res.status(204).send()
+                    editFilters( resposta, party.filters)
+                }) 
                 .catch(err => res.status(500).send(err)) 
         }else{
             party.createdAt = new Date();
             app.db('party')
                 .insert( party )
-                .then(() => res.status(204).send()) 
+                .then(resposta => {
+                    res.status(204).send()
+                    addFilters( resposta, party.filters)
+                }) 
                 .catch(err => res.status(500).send(err)) 
         }
 
@@ -72,6 +81,35 @@ module.exports = app => {
             .whereNull('deletedAt')
             .then(party => res.json({data: party, count, limit}))
             .catch(err => res.status(500).send(err))
+    }
+
+    const addFilters = async( id, filters) =>{
+
+        await filters.forEach(item => {
+            app.db('party_filters')
+            .insert({createdAt: new Date(),partyId: id, name: item })
+            .then( () => console.log('cadastrado'))
+            .catch(err => console.log(err)) 
+        });
+        
+    }
+
+    const editFilters = async( id, filters) =>{
+
+        await app.db('party_filters')
+        .delete()
+        .where({partyId: id})
+        .then(res => console.log(res))
+        .catch( err => res.status(500).send(err))
+ 
+
+        await filters.forEach(item => {
+            app.db('party_filters')
+            .insert({updatedAt: new Date(), partyId: id, name: item})
+            .then(res => console.log(res))
+            .catch(err => console.log(err)) 
+        });
+        
     }
 
     

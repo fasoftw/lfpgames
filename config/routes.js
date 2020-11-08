@@ -56,6 +56,12 @@ module.exports = app => {
     
         app.route('/parties/:id')
         .put(app.api.parties.save)
+       
+    app.route('/filtersParties/:id')
+        .get(app.api.filtersParties.getByIdParty)
+
+    app.route('/filtersParties')
+        .get(app.api.filtersParties.get)
 
   
 }

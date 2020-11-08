@@ -15,7 +15,6 @@ module.exports = app => {
             existsOrError(party.isOpen,'Erro!')
             existsOrError(party.filters,'Numero de players não informado.')
 
-            
 /*            const verNameParty = await app.db('party')
                 .where({ name: party.name }).first()
             existsOrError(verNameParty, 'O Nome do grupo já existe.')  */
@@ -44,19 +43,37 @@ module.exports = app => {
         if(party.id) {
             party.updatedAt = new Date();
             app.db('party')
-                .update(party)
+                .update({
+                    createdAt: party.createdAt,
+                    name: party.name,
+                    gameId: party.gameId,
+                    userId: party.userId,
+                    platformId: party.platformId,
+                    isOpen: party.isOpen,
+                    numberPlayers: party.numberPlayers,
+                    rank: party.rank
+                })
                 .where({ id: party.id })
                 .then(resposta => {
-                    res.status(204).send()
-                    editFilters( resposta, party.filters)
+                    const end = editFilters( resposta, party.filters)
+                    res.send(end).status(204)
                 }) 
                 .catch(err => res.status(500).send(err)) 
         }else{
             party.createdAt = new Date();
             app.db('party')
-                .insert( party )
+                .insert( { 
+                    createdAt: party.createdAt,
+                    name: party.name,
+                    gameId: party.gameId,
+                    userId: party.userId,
+                    platformId: party.platformId,
+                    isOpen: party.isOpen,
+                    numberPlayers: party.numberPlayers,
+                    rank: party.rank 
+                } )
                 .then(resposta => {
-                    res.status(204).send()
+                    res.status(201).send(resposta)   
                     addFilters( resposta, party.filters)
                 }) 
                 .catch(err => res.status(500).send(err)) 
@@ -84,11 +101,12 @@ module.exports = app => {
     }
 
     const addFilters = async( id, filters) =>{
-
+        console.log(id)
+        console.log(filters)
         await filters.forEach(item => {
             app.db('party_filters')
             .insert({createdAt: new Date(),partyId: id, name: item })
-            .then( () => console.log('cadastrado'))
+            .then( () => { return true})
             .catch(err => console.log(err)) 
         });
         

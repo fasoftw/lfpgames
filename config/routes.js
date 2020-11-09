@@ -54,7 +54,7 @@ module.exports = app => {
         .post(app.api.parties.save)
         .get(app.api.parties.get)
     
-        app.route('/parties/:id')
+    app.route('/parties/:id')
         .put(app.api.parties.save)
        
     app.route('/filtersParties/:id')
@@ -62,6 +62,9 @@ module.exports = app => {
 
     app.route('/filtersParties')
         .get(app.api.filtersParties.get)
+   
+    app.route('/gamesParties')
+        .get(app.api.gamesParties.get)
 
   
 }

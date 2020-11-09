@@ -18,7 +18,8 @@ exports.up = async function(knex, Promise) {
             {createdAt: new Date(), name: "Battleground"},
             {createdAt: new Date(), name: "Sandbox RPG"},
             {createdAt: new Date(), name: "Simulation"},
-            {createdAt: new Date(), name: " Strategy"}  
+            {createdAt: new Date(), name: " Strategy"},
+            {createdAt: new Date(), name: "MOBA"}   
         ]);
     }
 )

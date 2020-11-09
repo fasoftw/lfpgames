@@ -44,14 +44,15 @@ module.exports = app => {
             party.updatedAt = new Date();
             app.db('party')
                 .update({
-                    createdAt: party.createdAt,
+                    updatedAt: party.updatedAt,
                     name: party.name,
                     gameId: party.gameId,
                     userId: party.userId,
                     platformId: party.platformId,
                     isOpen: party.isOpen,
                     numberPlayers: party.numberPlayers,
-                    rank: party.rank
+                    rank: party.rank,
+                    description: party.description
                 })
                 .where({ id: party.id })
                 .then(resposta => {
@@ -70,7 +71,8 @@ module.exports = app => {
                     platformId: party.platformId,
                     isOpen: party.isOpen,
                     numberPlayers: party.numberPlayers,
-                    rank: party.rank 
+                    rank: party.rank,
+                    description: party.description
                 } )
                 .then(resposta => {
                     res.status(201).send(resposta)   

@@ -63,11 +63,7 @@ module.exports = app => {
         .whereNull("game_profile.deletedAt")
         .where({"game_profile.id": req.params.id})
         .then(profile => res.json(profile))
-        .catch(err => res.status(500).send(err))   
-
-        await party.filters.forEach(item => {
-            app.db.raw('INSERT INTO party_filters (createdAt, partyId, name) VALUES(:createdAt, :partyId, :name)', [{createdAt:  new Date(), partyId: resposta, name: item.name}])
-            })
+        .catch(err => res.status(500).send(err))  
                             
     }
     

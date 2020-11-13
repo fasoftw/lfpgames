@@ -10,6 +10,8 @@ exports.up = async function(knex, Promise) {
        table.integer('gameId').unsigned().references('id')
        .inTable('games').notNull().onDelete('CASCADE')
        table.string('name').notNull()
+       table.integer('platformId').unsigned().references('id')
+       .inTable('platforms').notNull().onDelete('CASCADE')
    })
 };
 

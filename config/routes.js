@@ -66,5 +66,15 @@ module.exports = app => {
     app.route('/gamesParties')
         .get(app.api.gamesParties.get)
 
+    app.route('/gameProfile')
+        .post(app.api.gameProfile.save)
+        .put(app.api.gameProfile.save)
+    
+    app.route('/gameProfile/:id')
+        .get(app.api.gameProfile.getById)
+
+    app.route('/gameProfileUser/:id')
+        .get(app.api.gameProfileUser.getByIdUser)
+
   
 }

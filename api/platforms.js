@@ -10,6 +10,7 @@ module.exports = app => {
 
     const getByIdGame = (req,res) =>{
         app.db("platforms_games")
+        .count('platforms_games.platformId')
         .select('platforms_games.*','platforms.name')
         .join("platforms", "platforms.id", "platforms_games.platformId")
         .whereNull("platforms_games.deletedAt")

@@ -6,9 +6,9 @@ exports.up = async function(knex) {
         table.dateTime('updatedAt').nullable()
         table.dateTime('deletedAt').nullable()
         table.integer('userId').unsigned().references('id')
-            .inTable('users').notNull().onDelete('CASCADE')
+            .inTable('users').notNull()
         table.integer('partyId').unsigned().references('id')
-            .inTable('party').notNull().onDelete('CASCADE')
+            .inTable('party').notNull()
         table.string('nickname').notNull()
     })
 };

@@ -75,6 +75,9 @@ module.exports = app => {
 
     app.route('/gameProfileUser/:id')
         .get(app.api.gameProfileUser.getByIdUser)
+    
+    app.route('/gamesParties/:id')
+        .get(app.api.gamesParties.get)
 
   
 }

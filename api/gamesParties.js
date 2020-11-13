@@ -1,7 +1,6 @@
 module.exports = app => {
     
     const get = async(req,res)=>{
-        console.log("teste")
 
          app.db('party')
          .count('party.id as counter')

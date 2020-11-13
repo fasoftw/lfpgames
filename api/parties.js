@@ -1,3 +1,5 @@
+const queriesGames = require('./queries/queriesGames')
+
 module.exports = app => {
     
     const { existsOrError, notExistsOrError }  = app.api.validation
@@ -62,7 +64,7 @@ module.exports = app => {
                 .catch(err => res.status(500).send(err)) 
         }else{
             party.createdAt = new Date();
-            app.db('party')
+            await app.db('party')
                 .insert( { 
                     createdAt: party.createdAt,
                     name: party.name,
@@ -75,8 +77,14 @@ module.exports = app => {
                     description: party.description
                 } )
                 .then(resposta => {
-                    res.status(201).send(resposta)   
-                    addFilters( resposta, party.filters)
+                     party.filters.forEach((item) => {
+                        const res = app.db.raw(queriesGames.addFilters, [
+                            new Date(),  
+                            resposta[0],
+                            item],
+                            item).then( count => { console.log(count);})
+                    })
+                    res.status(201).send(resposta) 
                 }) 
                 .catch(err => res.status(500).send(err)) 
         }
@@ -87,18 +95,18 @@ module.exports = app => {
 
     const limit = 10
 
+
     const get = async (req,res) =>{
         const page = req.query.page || 1
 
         const result = await app.db('party').count('id').first()
 
         const count = parseInt(result.count) 
-
          app.db('party')
             .select('*')
             .limit(limit).offset(page * limit - limit)
             .whereNull('deletedAt')
-            .then(party => res.json({data: party, count, limit}))
+            .then(party => res.json({ party, count, limit }))
             .catch(err => res.status(500).send(err))
     }
 
@@ -131,7 +139,13 @@ module.exports = app => {
         });
         
     }
-
+    
+    const addPlayer = async (party) => {
+        await app.db('party_players')
+        .insert({createdAt: new Date(party.UserId), userId: party.userId, partyId: party.partyId })
+        .then(res => console.log(res))
+        .catch(err => console.log(err)) 
+    }
     
    
 

@@ -8,8 +8,14 @@ exports.up = async function(knex, Promise) {
         table.integer('gameId').unsigned().references('id')
         .inTable('games').notNull()
         table.string('name').notNull()
-    })
-};
+    }).then(async function () {
+        await knex("filters").insert([   
+            {createdAt: new Date(), gameId:1, name:"Support"},
+            {createdAt: new Date(), gameId:1, name:"Midlane"}
+    ]);
+  }
+)
+}
 
 exports.down = async function(knex, Promise) {
     await knex.schema.dropTable('filters')  

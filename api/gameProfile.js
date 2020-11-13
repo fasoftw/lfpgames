@@ -16,35 +16,42 @@ module.exports = app => {
             existsOrError(profile.userId, 'Erro')
 
 
-            const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
-                profile.platformId]) 
-            
-            //const ids = platforms.id.map(c => c)
-            console.log(platforms[0])
-      
-                       
-            
 
         }catch(err){
             return res.status(400).send(err)
         }
+        
+        const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
+            profile.platformId]) 
 
-        if(!req.params.id){
+        if(!req.params.id && (platforms[0].length == 0)){
+
             profile.createdAt = new Date();
             app.db('game_profile')
             .insert({createdAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: profile.platformId })
             .then(_ => res.status(201).send())
             .catch(err => res.status(500).send(err))
-        } else{
+
+        } else if(!req.params.id && (platforms[0].length >= 1)){
+
             profile.updatedAt = new Date();
             app.db('game_profile')
-            .insert({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
+            .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
+                userId: profile.userId, platformId: profile.platformId })
+            .where({platformId: profile.platformId}, 
+                {userId: profile.userId}, {gameId: profile.gameId})
+            .then(_ => res.status(201).send())
+            .catch(err => res.status(500).send(err))
+
+        } else if(req.params.id ){
+            profile.updatedAt = new Date();
+            app.db('game_profile')
+            .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: profile.platformId })
             .where({id: req.params.id})
             .then(_ => res.status(201).send())
             .catch(err => res.status(500).send(err))
-
         }
 
 
@@ -57,6 +64,11 @@ module.exports = app => {
         .where({"game_profile.id": req.params.id})
         .then(profile => res.json(profile))
         .catch(err => res.status(500).send(err))   
+
+        await party.filters.forEach(item => {
+            app.db.raw('INSERT INTO party_filters (createdAt, partyId, name) VALUES(:createdAt, :partyId, :name)', [{createdAt:  new Date(), partyId: resposta, name: item.name}])
+            })
+                            
     }
     
   

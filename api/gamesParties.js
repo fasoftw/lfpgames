@@ -17,18 +17,19 @@ module.exports = app => {
     }
 
     const getPartyUsers = async(req,res)=>{
-        
-
         await app.db('party_players')
-        .join("users","users.id", "party.gameId")
-        .select('games.id as gameId', 'games.name as gameName', 'games.maxPlayers', 'party.*')
-        .where({'party.isOpen': 1} && {'party.gameId': req.params.id})
-        .then(parties => res.json({ parties, limit }))
+        .select('*')
+        .count(id)
+        .where({'party_players': req.params.id})
+        .then(users => res.json({ users, count }))
         .catch(err => res.status(500).send(err))
-
         
     }
 
-    return {get}
+    const addPlayer = async(req,res)=>{
+
+    }
+
+    return {get, getPartyUsers}
 
 }

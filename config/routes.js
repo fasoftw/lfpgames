@@ -78,9 +78,9 @@ module.exports = app => {
    
     app.route('/gamesParties/:id')
         .get(app.api.gamesParties.get)
+        .get(app.api.gamesParties.getPartyUsers)
 
-
-
+        
     app.route('/gameProfile')
         .post(app.api.gameProfile.save)
         .put(app.api.gameProfile.save)

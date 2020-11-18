@@ -9,7 +9,6 @@ exports.up = async function(knex) {
             .inTable('users').notNull()
         table.integer('partyId').unsigned().references('id')
             .inTable('party').notNull()
-        table.string('nickname').notNull()
     })
 };
 

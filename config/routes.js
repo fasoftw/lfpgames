@@ -80,5 +80,14 @@ module.exports = app => {
     app.route('/gamesParties/:id')
         .get(app.api.gamesParties.get)
 
+    app.route('/articles')
+        .get(app.api.articles.get)
+        .post(app.api.articles.save)
+
+    app.route('/articles/:id')
+        .get(app.api.articles.getById)
+        .put(app.api.articles.save)
+        .delete(app.api.articles.remove)
+
   
 }

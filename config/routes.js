@@ -18,21 +18,29 @@ module.exports = app => {
         .put(app.api.user.save)
         .delete(app.api.user.remove)
     
+
+
+
     app.route('/games')
         .post(app.api.games.save)
         .get(app.api.games.get)
       
-
     app.route('/games/:id')
         .put(app.api.games.save)
         .delete(app.api.games.remove)
         .get(app.api.games.getById)
+
+
+
 
     app.route('/platforms')
         .get(app.api.platforms.get)      
     
     app.route('/platforms/:id')
         .get(app.api.platforms.getByIdGame)
+
+
+
 
     app.route('/categories')
         .post(app.api.categories.save)
@@ -42,12 +50,17 @@ module.exports = app => {
         .put(app.api.categories.save)
         .delete(app.api.categories.remove)
 
+
+
+
     app.route('/filters')
         .post(app.api.filters.save)
         .get(app.api.filters.get)
 
     app.route('/filters/:id')
         .get(app.api.filters.getByIdGame)
+
+
 
 
     app.route('/parties')
@@ -63,8 +76,10 @@ module.exports = app => {
     app.route('/filtersParties')
         .get(app.api.filtersParties.get)
    
-    app.route('/gamesParties')
+    app.route('/gamesParties/:id')
         .get(app.api.gamesParties.get)
+
+
 
     app.route('/gameProfile')
         .post(app.api.gameProfile.save)
@@ -77,8 +92,7 @@ module.exports = app => {
         .get(app.api.gameProfileUser.getByIdUser)
         .delete(app.api.gameProfileUser.remove)
     
-    app.route('/gamesParties/:id')
-        .get(app.api.gamesParties.get)
+
 
   
 }

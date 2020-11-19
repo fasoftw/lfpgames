@@ -19,8 +19,6 @@ module.exports = app => {
         .delete(app.api.user.remove)
     
 
-
-
     app.route('/games')
         .post(app.api.games.save)
         .get(app.api.games.get)
@@ -30,16 +28,25 @@ module.exports = app => {
         .delete(app.api.games.remove)
         .get(app.api.games.getById)
 
+    app.route('/game/:id/filters')
+        .get(app.api.game.filters.get)
+    
+    app.route('/game/profile/user')
+       .post(app.api.game.user.profile.save)    
 
+    app.route('/game/profile/user/:id')
+        .delete(app.api.game.user.profile.remove)
+        .get(app.api.game.user.profile.get)
+
+    app.route('/game/:id/platforms')
+        .get(app.api.game.platforms.get)
+
+    app.route('/game/:id/parties')
+        .get(app.api.game.parties.get)    
 
 
     app.route('/platforms')
         .get(app.api.platforms.get)      
-    
-    app.route('/platforms/:id')
-        .get(app.api.platforms.getByIdGame)
-
-
 
 
     app.route('/categories')
@@ -51,16 +58,9 @@ module.exports = app => {
         .delete(app.api.categories.remove)
 
 
-
-
     app.route('/filters')
         .post(app.api.filters.save)
         .get(app.api.filters.get)
-
-    app.route('/filters/:id')
-        .get(app.api.filters.getByIdGame)
-
-
 
 
     app.route('/parties')
@@ -69,30 +69,7 @@ module.exports = app => {
     
     app.route('/parties/:id')
         .put(app.api.parties.save)
-       
-    app.route('/filtersParties/:id')
-        .get(app.api.filtersParties.getByIdParty)
-
-    app.route('/filtersParties')
-        .get(app.api.filtersParties.get)
    
-    app.route('/gamesParties/:id')
-        .get(app.api.gamesParties.get)
-
-
-
-    app.route('/gameProfile')
-        .post(app.api.gameProfile.save)
-        .put(app.api.gameProfile.save)
-    
-    app.route('/gameProfile/:id')
-        .get(app.api.gameProfile.getById)
-
-    app.route('/gameProfileUser/:id')
-        .get(app.api.gameProfileUser.getByIdUser)
-        .delete(app.api.gameProfileUser.remove)
-    
-
 
     app.route('/articles')
         .get(app.api.articles.get)

@@ -20,9 +20,13 @@ module.exports = app => {
         }catch(err){
             return res.status(400).send(err)
         }
+
+        console.log(profile)
         
         const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
             profile.platformId]) 
+
+            console.log(platforms)
 
         if(!req.params.id && (platforms[0].length == 0)){
 
@@ -56,18 +60,39 @@ module.exports = app => {
 
 
     }
-
-    const getById = (req,res) =>{
-        app.db("game_profile")
-        .select('*')
-        .whereNull("game_profile.deletedAt")
-        .where({"game_profile.id": req.params.id})
-        .then(profile => res.json(profile))
-        .catch(err => res.status(500).send(err))  
-                            
-    }
     
+    const get = (req,res) =>{
+        app.db("game_profile")
+        .select('game_profile.*','games.name as gameName', 'platforms.name as platformName')
+        .join("users", "users.id", "game_profile.userId")
+        .join("games", "games.id", "game_profile.gameId")
+        .join("platforms", "platforms.id", "game_profile.platformId")
+        .join("platforms_games", "platforms_games.gameId", "game_profile.gameId")
+        .whereNull("game_profile.deletedAt")
+        .where({"game_profile.userId": req.params.id})
+        .groupBy('game_profile.platformId')
+        .then(filters => res.json(filters))
+        .catch(err => res.status(500).send(err))       
+        
+        
+    }
+
+    
+    const remove = async (req,res) =>{
+        
+        try{
+            console.log(req.params.id)
+
+            await app.db('game_profile')
+                .where({ id: req.params.id }).del()
+
+            res.status(204).send()
+        }catch(msg){
+            res.status(400).send(msg)
+        }       
+        
+    }
   
-    return {save,getById}
+    return {save,get,remove}
 
 }

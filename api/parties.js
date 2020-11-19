@@ -16,7 +16,6 @@ module.exports = app => {
             existsOrError(party.platformId,'Plataforma não informado.')
             existsOrError(party.numberPlayers,'Numero de players não informado.')
             existsOrError(party.isOpen,'Erro!')
-            existsOrError(party.filters,'Numero de players não informado.')
 
 /*            const verNameParty = await app.db('party')
                 .where({ name: party.name }).first()
@@ -118,29 +117,7 @@ module.exports = app => {
             .whereNull('deletedAt')
             .then(parties => res.json({ parties, count, limit }))
             .catch(err => res.status(500).send(err))
-    }
-
-
-    const editFilters = async( id, filters) =>{
-
-        await app.db('party_filters')
-        .delete()
-        .where({partyId: id})
-        .then(res => console.log(res))
-        .catch( err => res.status(500).send(err))
- 
-
-        await filters.forEach(item => {
-            app.db('party_filters')
-            .insert({updatedAt: new Date(), partyId: id, name: item})
-            .then(res => console.log(res))
-            .catch(err => console.log(err)) 
-        });
-        
-    }
-    
-    
-    
+    } 
    
 
     return {save, get}

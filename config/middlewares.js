@@ -1,5 +1,6 @@
 const bodyParser = require('body-parser')
 const cors = require('cors')
+
 const corsOptions = {
 
     origin: '*', // client (todo mundo pode acessar)

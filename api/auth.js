@@ -39,21 +39,23 @@ module.exports = app => {
         })
 
     }
-
-    const validateToken = async ( req, res ) => {
+    const validateToken = async (req, res) => {
         const userData = req.body || null
-        try{
-            if(userDate){
+        try {
+            if(userData) {
                 const token = jwt.decode(userData.token, authSecret)
-                if( new Date( token.exp * 1000 ) > new date()){
+                if(new Date(token.exp * 1000) > new Date()) {
                     return res.send(true)
                 }
             }
-        } catch(e){
-            
+        } catch(e) {
+            // problema com o token
         }
 
         res.send(false)
+      
+
+      
     }
 
     return { signIn, validateToken }

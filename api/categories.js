@@ -35,7 +35,7 @@ module.exports = app => {
     }
 
     const remove = async ( req, res) =>{        
-        console.log(req.data)
+
         try{
             existsOrError(req.params.id, 'Código do game não informado.')
 

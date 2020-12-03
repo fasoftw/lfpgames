@@ -5,7 +5,7 @@ module.exports = app => {
     const get = async(req,res)=>{
         
 
-        await app.db('party_players')
+        await app.db('party')
         .join("users","users.id", "party.gameId")
         .select('games.id as gameId', 'games.name as gameName', 'games.maxPlayers', 'party.*')
         .where({'party.isOpen': 1} && {'party.gameId': req.params.id})

@@ -8,10 +8,12 @@ module.exports = app => {
 
         await app.db('party')
         .join("games","games.id", "party.gameId")
-        .select('games.id as gameId', 'games.name as gameName', 'games.maxPlayers', 'party.*')
+        .join("users", "users.id", "party.userId")
+        .select('games.id as gameId', 'games.name as gameName', 'games.maxPlayers', 'party.*', 'users.name as userName')
         .limit(limit).offset(page * limit - limit)
         .where({'party.isOpen': 1} && {'party.gameId': req.params.id})
-        .then(parties => res.json({ parties, limit }))
+        .then(parties =>{ console.log(parties) 
+            res.json({ parties, limit })})
         .catch(err => res.status(500).send(err))
 
         

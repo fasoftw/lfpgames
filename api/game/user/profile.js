@@ -20,13 +20,10 @@ module.exports = app => {
         }catch(err){
             return res.status(400).send(err)
         }
-
-        console.log(profile)
         
         const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
             profile.platformId]) 
 
-            console.log(platforms)
 
         if(!req.params.id && (platforms[0].length == 0)){
 

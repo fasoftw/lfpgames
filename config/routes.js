@@ -81,7 +81,23 @@ module.exports = app => {
     app.route('/parties/:id')
     .all(app.config.passport.authenticate())
         .put(app.api.parties.save)
-   
+
+    app.route('/party/user/:id/recommendation')
+    .all(app.config.passport.authenticate())
+        .get(app.api.party.user.recommendation.get)
+
+    app.route('/party/user/:id')
+    .all(app.config.passport.authenticate())
+        .get(app.api.party.user.parties.get)
+
+    app.route('/party/:id/players')
+        .post(app.api.party.players.save)
+        .get(app.api.party.players.getById)
+
+
+    
+        
+        
 
     app.route('/articles')
         .get(app.api.articles.get)

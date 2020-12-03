@@ -77,21 +77,23 @@ module.exports = app => {
                     isOpen: party.isOpen,
                     numberPlayers: party.numberPlayers,
                     rank: party.rank,
-                    description: party.description
+                    description: party.description,
+                    spotsFilled: 0
                 } )
                 .then(resposta => {
-                    app.db.raw(queriesGames.addFirstPlayer, [
-                        new Date(),  
-                        party.userId,
-                        resposta[0]])
-                    .then(
-                        party.filters.forEach((item) => {
-                            app.db.raw(queriesGames.addFilters, [
-                                new Date(),  
-                                resposta[0],
-                                item], item).then( count => {return count})
-                        })
-                    )
+                    // app.db.raw(queriesGames.addFirstPlayer, [
+                    //     new Date(),  
+                    //     party.userId,
+                    //     resposta[0]])
+                    // .then(
+
+                    // )
+                    party.filters.forEach((item) => {
+                    app.db.raw(queriesGames.addFilters, [
+                            new Date(),  
+                        resposta[0],
+                        item], item).then( count => {return count})
+                     })
                     res.status(201).send(resposta) 
                 }) 
                 .catch(err => res.status(500).send(err)) 

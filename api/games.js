@@ -131,7 +131,7 @@ module.exports = app => {
     }
 
     const addFilters = async( id, filters) =>{
-        console.log(filters)
+
         await filters.forEach(item => {
             app.db('filters')
             .insert({createdAt: new Date(),gameId: id, name: item })

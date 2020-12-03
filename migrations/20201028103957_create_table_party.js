@@ -17,6 +17,7 @@ exports.up = async function(knex, Promise) {
         table.integer('numberPlayers').notNull()
         table.integer('rank')
         table.integer('level')
+        table.integer('spotsFilled')
 
         //party_filters tem dependencia com party
 

@@ -1,4 +1,4 @@
-const queriesGames = require('./queries/queriesGames')
+const queries = require('./queries/queries')
 
 module.exports = app => {
     
@@ -8,14 +8,12 @@ module.exports = app => {
         const party = {...req.body}
         if(req.params.id) party.id = req.params.id
 
-
         try{
             existsOrError(party.name,'Nome da party não informado.')
             existsOrError(party.userId,'Usuario não informado.')
             existsOrError(party.gameId,'Jogo não informado.')
             existsOrError(party.platformId,'Plataforma não informado.')
             existsOrError(party.numberPlayers,'Numero de players não informado.')
-            existsOrError(party.isOpen,'Erro!')
 
 /*            const verNameParty = await app.db('party')
                 .where({ name: party.name }).first()
@@ -32,39 +30,70 @@ module.exports = app => {
                 .where({ id: party.gameId }).first()
             existsOrError(verGameId, 'Jogo não existe.')
 
-            if(party.rank) existsOrError(verGameId.rank, 'Jogo não contem rank.')
+            if(party.rank) existsOrError(verGameId.rank, 'Error')
 
             const verPlatformId = await app.db('platforms')
                 .where({ id: party.platformId}).first()
-            existsOrError(verPlatformId, 'Jogo não existe.')
+            existsOrError(verPlatformId, 'Error platform.')
 
         }catch(msg){
-            console.log('error')
+            console.log(msg)
             return res.status(400).send(msg)
         }
 
         if(party.id) {
-            console.log('update')
-            party.updatedAt = new Date();
-            app.db('party')
-                .update({
-                    updatedAt: party.updatedAt,
-                    name: party.name,
-                    gameId: party.gameId,
-                    userId: party.userId,
-                    platformId: party.platformId,
-                    isOpen: party.isOpen,
-                    numberPlayers: party.numberPlayers,
-                    rank: party.rank,
-                    description: party.description
+        app.db.transaction( async function(partyTr)
+        {
+            await app.db('party')
+            .transacting(partyTr)
+            .update({
+                updatedAt: party.updatedAt = new Date(),
+                name: party.name,
+                gameId: party.gameId,
+                userId: party.userId,
+                platformId: party.platformId,
+                isOpen: party.isOpen,
+                numberPlayers: party.numberPlayers,
+                rank: party.rank,
+                description: party.description,
+                spotsFilled: party.spotsFilled,
+                isOpen: party.isOpen,
+                level: party.level
+            })
+            .where({ id: party.id })
+            .then(_resposta =>{
+                
+                
+                app.db.raw(queries.deleteFilters, party.id).then( 
+                count => { return count })
+
+                party.filters.forEach((item) => {
+
+                    app.db.raw(queries.addFilters, [new Date(),party.id,item]).
+                        then( () => {
+                            return 
+                        })
+                        .catch(err => console.log(err))
                 })
-                .where({ id: party.id })
-                .then(resposta => {
-//                    app.db.raw(queriesGames.deleteFilters, resposta[0]).then( count => { console.log(count);})
-                    const end = editFilters( resposta, party.filters)
-                    res.send(end).status(204)
-                }) 
-                .catch(err => res.status(500).send(err)) 
+
+                partyTr.commit
+                res.sendStatus(201).send(_resposta) 
+                
+                
+                
+            })
+            .catch(err => {
+                partyTr.rollback
+                res.status(500).send(err)
+            })
+         })
+         .then(function() {
+            console.log('Transaction complete.');
+          })
+          .catch(function(err) {
+            console.error(err);
+        });
+
         }else{
             party.createdAt = new Date();
             await app.db('party')
@@ -78,7 +107,9 @@ module.exports = app => {
                     numberPlayers: party.numberPlayers,
                     rank: party.rank,
                     description: party.description,
-                    spotsFilled: 0
+                    spotsFilled: 0,
+                    isOpen: party.isOpen,
+                    level: party.level
                 } )
                 .then(resposta => {
                     // app.db.raw(queriesGames.addFirstPlayer, [
@@ -87,13 +118,14 @@ module.exports = app => {
                     //     resposta[0]])
                     // .then(
 
-                    // )
+                    // )s
                     party.filters.forEach((item) => {
-                    app.db.raw(queriesGames.addFilters, [
+                    app.db.raw(queries.addFilters, [
                             new Date(),  
                         resposta[0],
                         item], item).then( count => {return count})
                      })
+
                     res.status(201).send(resposta) 
                 }) 
                 .catch(err => res.status(500).send(err)) 
@@ -120,8 +152,22 @@ module.exports = app => {
             .then(parties => res.json({ parties, count, limit }))
             .catch(err => res.status(500).send(err))
     } 
+
+    const remove = async (req,res) =>{
+        const id = req.params.id
+       
+
+        app.db('party')
+        .where({id: req.params.id})
+        .del()
+        .then( () =>
+            res.status(200).send()
+        )
+        .catch(err => res.status(204).send(err))
+    }
+    
    
 
-    return {save, get}
+    return {save, get, remove}
 }
 

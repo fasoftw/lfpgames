@@ -6,11 +6,11 @@ exports.up = async function(knex) {
         table.dateTime('updatedAt').nullable()
         table.dateTime('deletedAt').nullable()
         table.integer('userId').unsigned().references('id')
-            .inTable('users').notNull()
+            .inTable('users').notNull().onDelete('CASCADE') 
         table.integer('partyId').unsigned().references('id')
-            .inTable('party').notNull()
+            .inTable('party').notNull().onDelete('CASCADE') 
         table.integer('gameProfileId').unsigned().references('id')
-            .inTable('game_profile').notNull()
+            .inTable('game_profile').notNull().onDelete('CASCADE') 
     })
 };
 

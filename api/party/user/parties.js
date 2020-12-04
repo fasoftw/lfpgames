@@ -5,7 +5,7 @@ module.exports = app => {
     const get = (req, res) => {
        			
             app.db('party as p')
-            .join('party_filters as pf', 'pf.partyId', 'p.id')
+            .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
             .join('users', 'users.id', 'p.userId')
             .join('games as g', 'g.id', 'p.gameId')
             .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank')

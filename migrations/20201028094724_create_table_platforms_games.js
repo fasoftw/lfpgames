@@ -6,9 +6,9 @@ exports.up = async function(knex, Promise) {
         table.dateTime('updatedAt').nullable()
         table.dateTime('deletedAt').nullable()
         table.integer('gameId').unsigned().references('id')
-        .inTable('games').notNull()
+        .inTable('games').notNull().onDelete('CASCADE') 
         table.integer('platformId').unsigned().references('id')
-        .inTable('platforms').notNull()
+        .inTable('platforms').notNull().onDelete('CASCADE') 
 
     }).then(async function () {
         await knex("platforms_games").insert([   

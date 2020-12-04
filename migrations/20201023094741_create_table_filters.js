@@ -6,7 +6,7 @@ exports.up = async function(knex, Promise) {
         table.dateTime('updatedAt').nullable()
         table.dateTime('deletedAt').nullable()
         table.integer('gameId').unsigned().references('id')
-        .inTable('games').notNull()
+        .inTable('games').notNull().onDelete('CASCADE') 
         table.string('name').notNull()
     }).then(async function () {
         await knex("filters").insert([   

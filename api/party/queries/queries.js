@@ -2,14 +2,15 @@ module.exports = {
     hasParty:`select games.id 
     from party
     join games ON party.gameId = games.id 
-    where userId = ?`,
+    where userId <> ?`,
     gameProfile: `select games.id 
     from game_profile
     join games ON game_profile.gameId = games.id 
     where game_profile.userId = ?`,
     gamesRecommendations: `select games.id, party.* 
     from party
-    join games ON party.gameId = games.id 
+    join games ON party.gameId = games.id
+    where userId <> ?
     LIMIT 8`,
     searchProfile: `select id
     from game_profile where userId = ? and gameId = ? and platformId = ? 

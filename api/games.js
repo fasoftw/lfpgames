@@ -77,23 +77,10 @@ module.exports = app => {
         try{
             existsOrError(req.params.id, 'Código do game não informado.')
 
-             await app.db('filters')
-            .update({deletedAt: new Date()})
-            .where({ gameId: req.params.id })
-
-
-            const platformsUpdated = await app.db('platforms_games')
-            .update({deletedAt: new Date()})
-            .where({ gameId: req.params.id })
-            existsOrError(platformsUpdated, 'Plataforma não foi encontrada.')
-
-           
-            const rowsUpdated = await app.db('games')
-            .update({deletedAt: new Date()})
+             await app.db('games')
             .where({ id: req.params.id })
-            existsOrError(rowsUpdated, 'Game não foi encontrado.')
-
-             res.status(204).send()
+            .del()
+            .then(()=>  res.status(204).send())
 
             } catch(err){
 

@@ -6,7 +6,7 @@ exports.up = async function(knex, Promise) {
        table.dateTime('updatedAt').nullable()
        table.dateTime('deletedAt').nullable()
        table.integer('partyId').unsigned().references('id')
-       .inTable('party').notNull()
+       .inTable('party').notNull().onDelete('CASCADE') 
        table.string('name').notNull()
    })
 };

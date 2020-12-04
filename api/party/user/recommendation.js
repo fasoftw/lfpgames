@@ -14,7 +14,8 @@ module.exports = app => {
                 return game.id
             })
             
-            let parties = await getGames(arrayGames)
+            let parties = await getGames(arrayGames,req.params.id)
+
             res.json({ parties })
 
         } else{
@@ -28,15 +29,16 @@ module.exports = app => {
                     return game.id
                 })
                
-                parties = await getGames(arrayGamesProfile)
+                parties = await getGames(arrayGamesProfile,req.params.id)
                 res.json({ parties })
     
               
             } else{
-
-                await app.db.raw(queries.gamesRecommendations)
+                await app.db.raw(queries.gamesRecommendations, [req.params.id])
                 .then( resp => { res.json(resp[0])})
                 .catch(err => console.log(err))
+
+                
                 
 
             }
@@ -48,13 +50,13 @@ module.exports = app => {
         
     }
 
-    const getGames =  async (array)=>{
+    const getGames =  async (array,id)=>{
 
         return await app.db.raw(`select games.name, party.*, users.name as userName
             from party
             join games ON games.id = party.gameId
             join users ON users.id = party.userId
-            WHERE games.id IN (${array})
+            WHERE games.id IN (${array}) and userId <> ${id}
             group by games.id
             LIMIT 8
         `)

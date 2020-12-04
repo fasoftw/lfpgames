@@ -81,6 +81,7 @@ module.exports = app => {
     app.route('/parties/:id')
     .all(app.config.passport.authenticate())
         .put(app.api.parties.save)
+        .delete(app.api.parties.remove)
 
     app.route('/party/user/:id/recommendation')
     .all(app.config.passport.authenticate())

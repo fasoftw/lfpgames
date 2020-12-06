@@ -80,7 +80,7 @@ module.exports = app => {
 
     const getById = async (req,res)=>{
 
-        await app.db('party')
+        await app.db('party_players')
         .where({id: req.params.id, isOpen: 1})
         .then( party =>{
             res.json({ party })

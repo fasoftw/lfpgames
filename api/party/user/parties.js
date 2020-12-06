@@ -8,7 +8,8 @@ module.exports = app => {
             .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
             .join('users', 'users.id', 'p.userId')
             .join('games as g', 'g.id', 'p.gameId')
-            .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank')
+            .join("platforms", "platforms.id", "p.platformId")
+            .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
             .where({userId: req.params.id})                
             .then(parties => {
                 parties = parties.map((p, i, array) => partyWithFilters(p, array));

@@ -3,12 +3,12 @@ module.exports = app => {
 
 
     const get = (req, res) => {
-       			
             app.db('party as p')
             .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
             .join('users', 'users.id', 'p.userId')
             .join('games as g', 'g.id', 'p.gameId')
-            .join("platforms", "platforms.id", "p.platformId")
+            .join('platforms_games as pg', 'pg.id', 'p.platformId')
+            .join("platforms", "platforms.id", "pg.platformId")
             .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
             .where({userId: req.params.id})                
             .then(parties => {
@@ -27,7 +27,6 @@ module.exports = app => {
                     party.filters.push({ id: v.nameId, name: v.name });
                 }
             });
-
             delete party.filterId;
             delete party.name;
             return party;

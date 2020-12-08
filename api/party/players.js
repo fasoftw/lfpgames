@@ -80,16 +80,32 @@ module.exports = app => {
 
     const getById = async (req,res)=>{
 
+        app.db('party_players as pp')
+            .join('users', 'users.id', 'pp.userId')
+            .join('game_profile as gp', 'gp.id', 'pp.gameProfileId')
+            .select('pp.id', 'pp.partyId', 'users.name as name', 'gp.name as nickname')
+            .where({partyId: req.params.id})
+            .then( party =>{
+                res.json({ party })
+            })
+            .catch(error => res.status(500).send(error))
+    }
+
+    const get = async (req,res) => {
+        
         await app.db('party_players')
-        .where({id: req.params.id, isOpen: 1})
-        .then( party =>{
-            res.json({ party })
-        })
+        .select('*')
+        .whereNull('deletedAt')
+        .then(
+            partyPlayers => res.json({ partyPlayers })
+        )
         .catch(error => res.status(500).send(error))
+
+
     }
 
   
 
-    return {save,getById}
+    return {save,getById,get}
 }
 

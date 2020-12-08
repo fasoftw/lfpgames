@@ -44,7 +44,7 @@ module.exports = app => {
         .get(app.api.game.user.profile.get)
 
     app.route('/game/:id/platforms')
-    .all(app.config.passport.authenticate())
+    //.all(app.config.passport.authenticate())
         .get(app.api.game.platforms.get)
 
     app.route('/game/:id/parties')
@@ -76,7 +76,7 @@ module.exports = app => {
     app.route('/parties')
     .all(app.config.passport.authenticate())
         .post(app.api.parties.save)
-        .get(app.api.parties.get)
+//        .get(app.api.parties.get) /*nem usa*/
     
     app.route('/parties/:id')
     .all(app.config.passport.authenticate())
@@ -88,17 +88,17 @@ module.exports = app => {
         .get(app.api.party.user.recommendation.get)
 
     app.route('/party/user/:id')
-    .all(app.config.passport.authenticate())
+    //.all(app.config.passport.authenticate())
         .get(app.api.party.user.parties.get)
 
     app.route('/party/:id/players')
         .post(app.api.party.players.save)
         .get(app.api.party.players.getById)
 
+    app.route('/party/players')
+        .get(app.api.party.players.get)
 
-    
-        
-        
+
 
     app.route('/articles')
         .get(app.api.articles.get)

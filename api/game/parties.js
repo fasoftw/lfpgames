@@ -2,20 +2,51 @@ module.exports = app => {
     
     const limit = 1
     const get = async(req,res)=>{
-
         const page = req.query.page || 1
 
-
-        await app.db('party')
-        .join("games","games.id", "party.gameId")
-        .join("users", "users.id", "party.userId")
-        .join("platforms", "platforms.id", "party.platformId")
-        .select('games.id as gameId', 'games.name as gameName', 'games.maxPlayers', 'party.*', 'users.name as userName', 'platforms.name as platformName','party.name as partyName')
+        app.db('party as p')
+        .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
+        .join('games as g', 'g.id', 'p.gameId')
+        .join('users', 'users.id', 'p.userId')
+        .join('platforms_games as pg', 'pg.id', 'p.platformId')
+        .join("platforms", "platforms.id", "pg.platformId")
+        .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
         .limit(limit).offset(page * limit - limit)
-        .where({'party.isOpen': 1} && {'party.gameId': req.params.id})
-        .then(parties =>{ console.log(parties) 
-            res.json({ parties, limit })})
-        .catch(err => res.status(500).send(err))
+        .where({isOpen: 1} &&  {'p.gameId' : req.params.id} )
+        .then(parties => {
+            console.log(parties)
+            parties = parties.map((p, i, array) => partyWithFilters(p, array));
+            parties = withoutDuplicate(parties);
+
+            return res.json({parties, limit })
+        })
+        .catch(e => console.log(e));
+
+        const partyWithFilters = (p, parties) => {
+            const party = { ...p };
+            party.filters = [];
+            parties.map((v) => {
+                if(v.id == party.id) {
+                    party.filters.push({ id: v.nameId, name: v.name });
+                }
+            });
+            delete party.filterId;
+            delete party.name;
+            return party;
+        }  
+    
+        const withoutDuplicate = withDuplicate => {
+            const ids = [];
+            const $arr = [];
+
+            withDuplicate.forEach(p => {
+                if(!ids.includes(p.id)) {
+                    $arr.push(p);
+                    ids.push(p.id);
+                }
+            })
+            return $arr;
+        }
 
         
     }

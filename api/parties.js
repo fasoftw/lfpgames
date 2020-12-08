@@ -7,7 +7,6 @@ module.exports = app => {
     const save = async (req,res) => {
         const party = {...req.body}
         if(req.params.id) party.id = req.params.id
-
         try{
             existsOrError(party.name,'Nome da party não informado.')
             existsOrError(party.userId,'Usuario não informado.')
@@ -37,7 +36,6 @@ module.exports = app => {
             existsOrError(verPlatformId, 'Error platform.')
 
         }catch(msg){
-            console.log(msg)
             return res.status(400).send(msg)
         }
 
@@ -135,7 +133,7 @@ module.exports = app => {
     }
 
 
-
+/*
     const limit = 10
     const get = async (req,res) =>{
         const page = req.query.page || 1
@@ -152,7 +150,7 @@ module.exports = app => {
             .then(parties => res.json({ parties, count, limit }))
             .catch(err => res.status(500).send(err))
     } 
-
+*/
     const remove = async (req,res) =>{
         const id = req.params.id
        
@@ -168,6 +166,6 @@ module.exports = app => {
     
    
 
-    return {save, get, remove}
+    return {save, /*get,*/ remove}
 }
 

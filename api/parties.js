@@ -22,6 +22,7 @@ module.exports = app => {
                 .where({ id: party.userId })
                 .whereNull('deletedAt')
                 .first()
+
             existsOrError(verUserId, 'Usuário não existe.')
 
 
@@ -31,9 +32,21 @@ module.exports = app => {
 
             if(party.rank) existsOrError(verGameId.rank, 'Error')
 
-            const verPlatformId = await app.db('platforms')
-                .where({ id: party.platformId}).first()
+            const verPlatformId = await app.db('platforms_games as pg')
+                .join("platforms", "platforms.id", "pg.platformId")
+                .where({ "pg.id": party.platformId }).first()
+
             existsOrError(verPlatformId, 'Error platform.')
+
+
+            const verGameProfile = await app.db('game_profile')
+                .where({ userId: party.userId }) 
+                .where({gameId: party.gameId} ) 
+                .where({platformId: verPlatformId.platformId})
+
+                
+            existsOrError(verGameProfile, 'Error User does not have a Profile.')
+
 
         }catch(msg){
             return res.status(400).send(msg)
@@ -110,13 +123,6 @@ module.exports = app => {
                     level: party.level
                 } )
                 .then(resposta => {
-                    // app.db.raw(queriesGames.addFirstPlayer, [
-                    //     new Date(),  
-                    //     party.userId,
-                    //     resposta[0]])
-                    // .then(
-
-                    // )s
                     party.filters.forEach((item) => {
                         app.db.raw(queries.addFilters, [
                                 new Date(),  

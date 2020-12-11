@@ -13,7 +13,6 @@ module.exports = app => {
 
         
         try{
-
             existsOrError(userId, 'Error User Id')
             existsOrError(partyId, 'Error game Id')
 
@@ -22,12 +21,19 @@ module.exports = app => {
         
 
             existsOrError(partyFromDb, 'Party not founded') 
-            
-            await app.db.raw(queries.searchProfile, [userId, party.gameId, party.platformId])
-            .then(res => profileFromDb = res[0])
-            
-            existsOrError(profileFromDb, 'Empty profile') 
 
+
+            platformId = await app.db('platforms_games as pg')
+                .join("platforms", "platforms.id", "pg.platformId")
+                .select('platforms.id')
+                .where({ "pg.id": party.platformId }).first()
+
+            console.log(platformId.id)
+
+
+            await app.db.raw(queries.searchProfile, [userId, party.gameId, platformId.id])
+            .then(res => profileFromDb = res[0])
+            existsOrError(profileFromDb, 'Empty profile') 
             /*
             if(profileFromDb.length === 0){
                 return res.send("Empty profile")

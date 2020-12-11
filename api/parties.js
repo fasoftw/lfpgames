@@ -118,12 +118,12 @@ module.exports = app => {
 
                     // )s
                     party.filters.forEach((item) => {
-                    app.db.raw(queries.addFilters, [
-                            new Date(),  
-                        resposta[0],
-                        item], item).then( count => {return count})
-                     })
-
+                        app.db.raw(queries.addFilters, [
+                                new Date(),  
+                            resposta[0],
+                            item], item).then( count => {return count})
+                        }
+                    )
                     res.status(201).send(resposta) 
                 }) 
                 .catch(err => res.status(500).send(err)) 

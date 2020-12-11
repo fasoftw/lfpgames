@@ -1,6 +1,6 @@
 module.exports = app => {
     
-    const limit = 1
+    const limit = 10
     const get = async(req,res)=>{
         const page = req.query.page || 1
 

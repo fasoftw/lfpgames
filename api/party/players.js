@@ -5,28 +5,37 @@ module.exports = app => {
 
     const save = async (req,res) => {
         const party = {...req.body}
-        const id = req.params.id
+        const userId = party.playerId
+        const partyId = req.params.id
+
         let profileFromDb, partyFromDb
 
+
+        
         try{
 
-            existsOrError(id, 'Error Party Id')
-            existsOrError(party.userId, 'Error User Id')
-            existsOrError(party.platformId, 'Error platform Id')
-            existsOrError(party.gameId, 'Error game Id')
+            existsOrError(userId, 'Error User Id')
+            existsOrError(partyId, 'Error game Id')
 
-            await app.db.raw(queries.searchParty, id)
-            .then(res => partyFromDb= res[0])
+            await app.db.raw(queries.searchParty, partyId)
+            .then(res => partyFromDb = res[0])
         
 
             existsOrError(partyFromDb, 'Party not founded') 
             
-            await app.db.raw(queries.searchProfile, [party.userId, party.gameId, party.platformId])
+            await app.db.raw(queries.searchProfile, [userId, party.gameId, party.platformId])
             .then(res => profileFromDb = res[0])
             
+            existsOrError(profileFromDb, 'Empty profile') 
+
+            /*
             if(profileFromDb.length === 0){
                 return res.send("Empty profile")
             } 
+            */
+
+            console.log(partyFromDb[0]) //idparty, spotsfilled, numMax
+            console.log(profileFromDb[0]) // idprofile
 
             var partyJson = Object.values(JSON.parse(JSON.stringify(partyFromDb)))
             var profileJson = Object.values(JSON.parse(JSON.stringify(profileFromDb))) 
@@ -34,19 +43,20 @@ module.exports = app => {
         }catch(err){
             return res.status(400).send(err)
         }
-        
+
+         
         if(partyJson[0].numberPlayers >= partyJson[0].spotsFilled+1){
             app.db.transaction( async function(partyTr)
             {
                 await app.db('party_players')
                 .transacting(partyTr)
-                .insert({userId: party.userId, partyId: id, gameProfileId: profileJson[0].id})
-                .then(_resposta =>{
-                    
+                .insert({userId: userId, partyId: partyId, gameProfileId: profileJson[0].id})
+                .then(_resposta =>{ 
                     app.db('party')
-                    .update({spotsFilled: partyJson[0].spotsFilled+1})
-                    .where({id: id})
+                    .update({spotsFilled: partyJson[0].spotsFilled + 1})
+                    .where({id: partyId})
                     .catch((err) => console.log(err))
+
 
                     partyTr.commit
                     res.status(201).send(_resposta)
@@ -68,7 +78,7 @@ module.exports = app => {
 
             await app.db('party')
             .update({isOpen: 0})
-            .where({id: id})
+            .where({id: partyId})
             .catch((err) => console.log(err))
 
             return res.send("closed party")

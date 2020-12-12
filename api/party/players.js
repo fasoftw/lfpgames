@@ -8,8 +8,7 @@ module.exports = app => {
         const userId = party.playerId
         const partyId = req.params.id
 
-        let profileFromDb, partyFromDb
-
+        let profileFromDb, partyFromDb, profile
 
         
         try{
@@ -27,20 +26,22 @@ module.exports = app => {
                 .join("platforms", "platforms.id", "pg.platformId")
                 .select('platforms.id')
                 .where({ "pg.id": party.platformId }).first()
+            existsOrError(platformId, 'Platform does not exist') 
 
-            console.log(platformId.id)
-
+            profile = await app.db('game_profile as gp')
+                .select('gp.id')
+                .where({'gp.id':party.profiles}).first()
+                console.log(profile)
+                existsOrError(profile, 'Empty profile') 
 
             await app.db.raw(queries.searchProfile, [userId, party.gameId, platformId.id])
             .then(res => profileFromDb = res[0])
             existsOrError(profileFromDb, 'Empty profile') 
-            /*
-            if(profileFromDb.length === 0){
-                return res.send("Empty profile")
-            } 
-            */
 
-            console.log(partyFromDb[0]) //idparty, spotsfilled, numMax
+            
+            
+
+            console.log('partyFromDb[0]') //idparty, spotsfilled, numMax
             console.log(profileFromDb[0]) // idprofile
 
             var partyJson = Object.values(JSON.parse(JSON.stringify(partyFromDb)))
@@ -56,7 +57,7 @@ module.exports = app => {
             {
                 await app.db('party_players')
                 .transacting(partyTr)
-                .insert({userId: userId, partyId: partyId, gameProfileId: profileJson[0].id})
+                .insert({userId: userId, partyId: partyId, gameProfileId: party.profiles})
                 .then(_resposta =>{ 
                     app.db('party')
                     .update({spotsFilled: partyJson[0].spotsFilled + 1})

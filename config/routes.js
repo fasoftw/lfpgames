@@ -39,9 +39,13 @@ module.exports = app => {
        .post(app.api.game.user.profile.save)    
 
     app.route('/game/profile/user/:id')
-    .all(app.config.passport.authenticate())
+    //.all(app.config.passport.authenticate())
         .delete(app.api.game.user.profile.remove)
         .get(app.api.game.user.profile.get)
+
+    app.route('/user/:userId/game/:gameId/platform/:platformId')
+    //.all(app.config.passport.authenticate())
+        .get(app.api.game.user.profile.getById)
 
     app.route('/game/:id/platforms')
     //.all(app.config.passport.authenticate())

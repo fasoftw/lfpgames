@@ -70,9 +70,26 @@ module.exports = app => {
         .groupBy('game_profile.platformId')
         .then(filters => res.json(filters))
         .catch(err => res.status(500).send(err))       
-        
-        
     }
+
+    const getById = (req,res) =>{
+        const userId = req.params.userId
+        const gameId =req.params.gameId
+        const platformId = req.params.platformId
+        
+        app.db("game_profile as gp")
+        .join("platforms", "platforms.id", "gp.platformId")
+        .join("platforms_games as pg", "pg.platformId", "platforms.id")
+        .select('gp.id', 'gp.name')
+        .whereNull("gp.deletedAt")
+        .where({"gp.userId": userId})
+        .where({"gp.gameId": gameId})
+        .where({"pg.Id": platformId})
+        .then(profiles => res.json(profiles))
+        .catch(err => res.status(500).send(err))       
+    }
+
+
 
     
     const remove = async (req,res) =>{
@@ -90,6 +107,6 @@ module.exports = app => {
         
     }
   
-    return {save,get,remove}
+    return {save,get,getById,remove}
 
 }

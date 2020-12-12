@@ -12,10 +12,10 @@ module.exports = app => {
         .join("platforms", "platforms.id", "pg.platformId")
         .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
         .limit(limit).offset(page * limit - limit)
-        .where({isOpen: 1})
+        //.where({isOpen: 1})
         .where({'p.gameId' : req.params.id})
         .then(parties => {
-            console.log(parties)
+            //console.log(parties)
             parties = parties.map((p, i, array) => partyWithFilters(p, array));
             parties = withoutDuplicate(parties);
 

@@ -9,9 +9,8 @@ module.exports = app => {
         const partyId = req.params.id
 
         let profileFromDb, partyFromDb, profile
-
-        
         try{
+            
             existsOrError(userId, 'Error User Id')
             existsOrError(partyId, 'Error game Id')
 
@@ -32,17 +31,17 @@ module.exports = app => {
                 .select('gp.id')
                 .where({'gp.id':party.profiles}).first()
                 console.log(profile)
-                existsOrError(profile, 'Empty profile') 
+               // existsOrError(profile, 'Empty profile') 
 
             await app.db.raw(queries.searchProfile, [userId, party.gameId, platformId.id])
             .then(res => profileFromDb = res[0])
-            existsOrError(profileFromDb, 'Empty profile') 
+            //existsOrError(profileFromDb, 'Empty profile') 
 
             
             
 
-            console.log('partyFromDb[0]') //idparty, spotsfilled, numMax
-            console.log(profileFromDb[0]) // idprofile
+            //console.log('partyFromDb[0]') //idparty, spotsfilled, numMax
+           // console.log(profileFromDb[0]) // idprofile
 
             var partyJson = Object.values(JSON.parse(JSON.stringify(partyFromDb)))
             var profileJson = Object.values(JSON.parse(JSON.stringify(profileFromDb))) 
@@ -66,6 +65,7 @@ module.exports = app => {
 
 
                     partyTr.commit
+                    
                     res.status(201).send(_resposta)
                 })
                 .catch(err => {

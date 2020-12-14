@@ -35,7 +35,7 @@ module.exports = app => {
         .get(app.api.game.filters.get)
     
     app.route('/game/profile/user')
-    .all(app.config.passport.authenticate())
+    //.all(app.config.passport.authenticate())
        .post(app.api.game.user.profile.save)    
 
     app.route('/game/profile/user/:id')

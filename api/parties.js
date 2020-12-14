@@ -38,14 +38,8 @@ module.exports = app => {
 
             existsOrError(verPlatformId, 'Error platform.')
 
-
-            const verGameProfile = await app.db('game_profile')
-                .where({ userId: party.userId }) 
-                .where({gameId: party.gameId} ) 
-                .where({platformId: verPlatformId.platformId})
-
                 
-            existsOrError(verGameProfile, 'Error User does not have a Profile.')
+            existsOrError(party.profiles, 'Error User does not have a Profile.')
 
 
         }catch(msg){

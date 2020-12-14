@@ -7,6 +7,8 @@ module.exports = app => {
     const save = async (req,res) => {
 
         const profile = {...req.body}
+
+        console.log(profile)
        
         try{
             
@@ -24,34 +26,46 @@ module.exports = app => {
         const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
             profile.platformId]) 
 
-
         if(!req.params.id && (platforms[0].length == 0)){
-
+            console.log('teste 1')
             profile.createdAt = new Date();
             app.db('game_profile')
             .insert({createdAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: profile.platformId })
-            .then(_ => res.status(201).send())
+            .then(_resposta => {
+                res.status(201).send(_resposta.toString())})
             .catch(err => res.status(500).send(err))
 
         } else if(!req.params.id && (platforms[0].length >= 1)){
-
+            console.log('oi')
             profile.updatedAt = new Date();
+
+            const profileId = await app.db.raw(queries.searchProfile,[profile.gameId, profile.userId,
+                profile.platformId])
+ 
+            var profileJson = Object.values(JSON.parse(JSON.stringify(profileId[0])))
+
+
             app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: profile.platformId })
-            .where({platformId: profile.platformId}, 
-                {userId: profile.userId}, {gameId: profile.gameId})
-            .then(_ => res.status(201).send())
+            .where({id: profileJson[0].id})
+            .then(_resposta => 
+                {
+                    res.status(201).send(profileJson[0].id.toString())
+            
+            })
             .catch(err => res.status(500).send(err))
 
         } else if(req.params.id ){
+
+            console.log('oi22')
             profile.updatedAt = new Date();
             app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: profile.platformId })
             .where({id: req.params.id})
-            .then(_ => res.status(201).send())
+            .then(_resposta => res.status(201).send(_resposta.toString()))
             .catch(err => res.status(500).send(err))
         }
 
@@ -65,10 +79,11 @@ module.exports = app => {
         .join("games", "games.id", "game_profile.gameId")
         .join("platforms", "platforms.id", "game_profile.platformId")
         .join("platforms_games", "platforms_games.gameId", "game_profile.gameId")
-        .whereNull("game_profile.deletedAt")
         .where({"game_profile.userId": req.params.id})
-        .groupBy('game_profile.platformId')
-        .then(filters => res.json(filters))
+        .groupBy('game_profile.name')
+        .then(filters => {
+            console.log(filters)
+            res.json(filters)})
         .catch(err => res.status(500).send(err))       
     }
 
@@ -95,7 +110,6 @@ module.exports = app => {
     const remove = async (req,res) =>{
         
         try{
-            console.log(req.params.id)
 
             await app.db('game_profile')
                 .where({ id: req.params.id }).del()

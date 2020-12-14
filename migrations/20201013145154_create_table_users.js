@@ -1,7 +1,7 @@
 //Tabela Users
 exports.up = async function(knex, Promise) {
     await knex.schema.createTable('users', table => {
-        console.log('users')
+
         table.increments('id').primary()
         table.dateTime('createdAt').nullable();
         table.dateTime('updatedAt').nullable();

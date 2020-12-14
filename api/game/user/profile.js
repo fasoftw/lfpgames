@@ -7,8 +7,6 @@ module.exports = app => {
     const save = async (req,res) => {
 
         const profile = {...req.body}
-
-        console.log(profile)
        
         try{
             
@@ -27,7 +25,7 @@ module.exports = app => {
             profile.platformId]) 
 
         if(!req.params.id && (platforms[0].length == 0)){
-            console.log('teste 1')
+
             profile.createdAt = new Date();
             app.db('game_profile')
             .insert({createdAt: new Date(), name: profile.name, gameId: profile.gameId, 
@@ -37,7 +35,7 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
 
         } else if(!req.params.id && (platforms[0].length >= 1)){
-            console.log('oi')
+
             profile.updatedAt = new Date();
 
             const profileId = await app.db.raw(queries.searchProfile,[profile.gameId, profile.userId,
@@ -59,7 +57,6 @@ module.exports = app => {
 
         } else if(req.params.id ){
 
-            console.log('oi22')
             profile.updatedAt = new Date();
             app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
@@ -82,7 +79,6 @@ module.exports = app => {
         .where({"game_profile.userId": req.params.id})
         .groupBy('game_profile.name')
         .then(filters => {
-            console.log(filters)
             res.json(filters)})
         .catch(err => res.status(500).send(err))       
     }

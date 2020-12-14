@@ -113,5 +113,12 @@ module.exports = app => {
         .put(app.api.articles.save)
         .delete(app.api.articles.remove)
 
+    app.route('/notifications')
+        .post(app.api.notifications.notifications.save)
+
+    app.route('/notifications/:id')
+        .get(app.api.notifications.notifications.getById)
+
+
   
 }

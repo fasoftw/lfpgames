@@ -12,7 +12,10 @@ exports.up = async function(knex, Promise) {
 
     }).then(async function () {
         await knex("platforms_games").insert([   
-            {createdAt: new Date(), gameId: 1, platformId:1}
+            {createdAt: new Date(), gameId: 1, platformId:1},
+            {createdAt: new Date(), gameId: 2, platformId:4},
+            {createdAt: new Date(), gameId: 3, platformId:10},
+            {createdAt: new Date(), gameId: 4, platformId:11}
     ]);
   }
 )

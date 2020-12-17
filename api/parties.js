@@ -133,24 +133,17 @@ module.exports = app => {
     }
 
 
-/*
-    const limit = 10
-    const get = async (req,res) =>{
-        const page = req.query.page || 1
 
-        const result = await app.db('party').count('id').first()
-
-        const count = parseInt(result.count) 
-
-
+    const getById = async (req,res) =>{
         app.db('party')
             .select('*')
-            .limit(limit).offset(page * limit - limit)
+            .where({id: req.params.id})
             .whereNull('deletedAt')
-            .then(parties => res.json({ parties, count, limit }))
+            .then(party => {
+                res.json({ party })})
             .catch(err => res.status(500).send(err))
     } 
-*/
+
     const remove = async (req,res) =>{
         const id = req.params.id
        
@@ -166,6 +159,6 @@ module.exports = app => {
     
    
 
-    return {save, /*get,*/ remove}
+    return {save, getById, remove}
 }
 

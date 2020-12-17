@@ -43,9 +43,11 @@ module.exports = app => {
         .delete(app.api.game.user.profile.remove)
         .get(app.api.game.user.profile.get)
 
+
     app.route('/user/:userId/game/:gameId/platform/:platformId')
     //.all(app.config.passport.authenticate())
         .get(app.api.game.user.profile.getById)
+
 
     app.route('/game/:id/platforms')
     //.all(app.config.passport.authenticate())
@@ -84,6 +86,7 @@ module.exports = app => {
     
     app.route('/parties/:id')
     .all(app.config.passport.authenticate())
+        .get(app.api.parties.getById)
         .put(app.api.parties.save)
         .delete(app.api.parties.remove)
 
@@ -99,6 +102,11 @@ module.exports = app => {
         .post(app.api.party.players.save)
         .get(app.api.party.players.getById)
 
+    
+    app.route('/party/:partyId/user/:userId')
+        .get(app.api.party.players.getByUserId)
+        .delete(app.api.party.players.remove)
+
     app.route('/party/players')
         .get(app.api.party.players.get)
 
@@ -112,13 +120,6 @@ module.exports = app => {
         .get(app.api.articles.getById)
         .put(app.api.articles.save)
         .delete(app.api.articles.remove)
-
-    app.route('/notifications')
-        .post(app.api.notifications.notifications.save)
-
-    app.route('/notifications/:id')
-        .get(app.api.notifications.notifications.getById)
-
 
   
 }

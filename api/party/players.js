@@ -10,7 +10,6 @@ module.exports = app => {
 
         let profileFromDb, partyFromDb, profile
         try{
-            
             existsOrError(userId, 'Error User Id')
             existsOrError(partyId, 'Error game Id')
 
@@ -27,11 +26,16 @@ module.exports = app => {
                 .where({ "pg.id": party.platformId }).first()
             existsOrError(platformId, 'Platform does not exist') 
 
+
             profile = await app.db('game_profile as gp')
                 .select('gp.id')
                 .where({'gp.id':party.profiles}).first()
+                .catch((err)=> console.log(err))
                 console.log(profile)
                // existsOrError(profile, 'Empty profile') 
+
+
+
 
             await app.db.raw(queries.searchProfile, [userId, party.gameId, platformId.id])
             .then(res => profileFromDb = res[0])
@@ -52,18 +56,25 @@ module.exports = app => {
 
          
         if(partyJson[0].numberPlayers >= partyJson[0].spotsFilled+1){
-            app.db.transaction( async function(partyTr)
+            app.db.transaction(async function(partyTr)
             {
                 await app.db('party_players')
                 .transacting(partyTr)
                 .insert({userId: userId, partyId: partyId, gameProfileId: party.profiles})
                 .then(_resposta =>{ 
-                    app.db('party')
-                    .update({spotsFilled: partyJson[0].spotsFilled + 1})
-                    .where({id: partyId})
-                    .catch((err) => console.log(err))
-
-
+                    if(partyJson[0].numberPlayers === partyJson[0].spotsFilled+1){
+                        app.db('party')
+                        .update({spotsFilled: partyJson[0].spotsFilled + 1, isOpen: 0})
+                        .where({id: partyId})
+                        .catch((err) => console.log(err))
+                    }
+                    else {
+                        app.db('party')
+                        .update({spotsFilled: partyJson[0].spotsFilled + 1})
+                        .where({id: partyId})
+                        .catch((err) => console.log(err))
+                    }
+                        
                     partyTr.commit
                     
                     res.status(201).send(_resposta)
@@ -78,9 +89,7 @@ module.exports = app => {
               })
               .catch(function(err) {
                 console.error(err);
-            });
-
-         
+            }); 
         }else{
 
             await app.db('party')
@@ -90,18 +99,28 @@ module.exports = app => {
 
             return res.send("closed party")
         }
-    
-       
-    
     }
 
     const getById = async (req,res)=>{
-
         app.db('party_players as pp')
             .join('users', 'users.id', 'pp.userId')
             .join('game_profile as gp', 'gp.id', 'pp.gameProfileId')
             .select('pp.id', 'pp.partyId', 'users.name as name', 'gp.name as nickname')
             .where({partyId: req.params.id})
+            .whereNull('pp.deletedAt')
+            .then( party =>{
+                res.json({ party })
+            })
+            .catch(error => res.status(500).send(error))
+    }
+
+    const getByUserId = async (req,res)=>{
+
+        app.db('party_players as pp')
+            .select('pp.id')
+            .where({partyId: req.params.partyId})
+            .where({'pp.userId': req.params.userId})
+            .whereNull('deletedAt')
             .then( party =>{
                 res.json({ party })
             })
@@ -121,8 +140,44 @@ module.exports = app => {
 
     }
 
+    const remove = ( req, res) =>{  
+        app.db.transaction(async function(PartyRemoveTr)   
+        { 
+            await app.db('party_players')
+                .transacting(PartyRemoveTr)
+                .update({deletedAt: new Date()})
+                .where({partyId: req.params.partyId})
+                .where({userId: req.params.userId})
+                .then(_resposta =>{ 
+                    app.db('party')
+                        .decrement('spotsFilled', 1)
+                        .update({isOpen: 1})
+                        .where({id: req.params.partyId})
+                        .catch((err) => console.log(err))
+
+                        PartyRemoveTr.commit
+
+                        res.status(201).send(_resposta.toString())
+                    
+                    }
+
+                ) 
+            .catch(err => {
+                PartyRemoveTr.rollback
+                console.log(err)
+                res.status(500).send(err)
+            })
+        })
+        .then(function() {
+            console.log('Transaction complete.');
+          })
+          .catch(function(err) {
+            console.error(err);
+        });
+    }
+
   
 
-    return {save,getById,get}
+    return {save,getById,get,getByUserId, remove}
 }
 

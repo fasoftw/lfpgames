@@ -14,6 +14,7 @@ module.exports = app => {
         .limit(limit).offset(page * limit - limit)
         //.where({isOpen: 1})
         .where({'p.gameId' : req.params.id})
+        .whereNull('p.deletedAt')
         .then(parties => {
             //console.log(parties)
             parties = parties.map((p, i, array) => partyWithFilters(p, array));

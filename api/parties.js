@@ -101,22 +101,28 @@ module.exports = app => {
 
         }else{
             party.createdAt = new Date();
-            await app.db('party')
-                .insert( { 
-                    createdAt: party.createdAt,
-                    name: party.name,
-                    gameId: party.gameId,
-                    userId: party.userId,
-                    platformId: party.platformId,
-                    isOpen: party.isOpen,
-                    numberPlayers: party.numberPlayers,
-                    rank: party.rank,
-                    description: party.description,
-                    spotsFilled: 0,
-                    isOpen: party.isOpen,
-                    level: party.level
-                } )
-                .then(resposta => {
+            async function withTransaction(callback) {
+                const trx = await app.db.transaction();
+                try {
+                 const result = await app.db('party')
+                               .insert( { 
+                                   createdAt: party.createdAt,
+                                   name: party.name,
+                                   gameId: party.gameId,
+                                   userId: party.userId,
+                                   platformId: party.platformId,
+                                   isOpen: party.isOpen,
+                                   numberPlayers: party.numberPlayers,
+                                   rank: party.rank,
+                                   description: party.description,
+                                   spotsFilled: 1,
+                                   isOpen: party.isOpen,
+                                   level: party.level
+                              })
+                                
+                 await trx.commit(); 
+                 if(result){
+
                     party.filters.forEach((item) => {
                         app.db.raw(queries.addFilters, [
                                 new Date(),  
@@ -124,28 +130,68 @@ module.exports = app => {
                             item], item).then( count => {return count})
                         }
                     )
+
                     app.db.raw(queries.insertNotification, [new Date(), party.name, 1, party.userId])
                     .then(() => {return })
                     .catch(err => console.log(err))
+                    
+                    await app.db.raw(queries.searchParty, result)
+                    .then(res => console.log(res[0]))
 
-    
-                    res.status(201).send(resposta) 
-                }) 
-                .catch(err => res.status(500).send(err)) 
+                    await app.db.raw(queries.searchProfile, [party.gameId, party.userId, party.platformId])
+                    .then(res => profile = res[0])
+                    
+
+                    const profileJson = profile.map( item=>{
+                        return {id: item.id}
+                    })
+
+                    const plyr = await app.db.transaction();
+                    try {
+                        const resposta = await app.db('party_players')
+                        .insert(
+                               {userId: party.userId, 
+                                partyId: result, 
+                                gameProfileId: profileJson[0].id})
+                        await plyr.commit();
+                        res.status(201).send(resposta) 
+                            
+                            
+                    }
+                    catch(e){
+                      await trx.rollback();
+                        throw e;
+                    }
+
+
+                 }
+                  
+                 return result;
+                } catch (e) {
+                    await trx.rollback();
+                    throw e;
+                }
+               }
+
+              
+               withTransaction()
+              
+               
+
+ 
         }
-
-    
     }
 
 
 
     const getById = async (req,res) =>{
-        app.db('party')
+        await app.db('party')
             .select('*')
             .where({id: req.params.id})
             .whereNull('deletedAt')
             .then(party => {
-                res.json({ party })})
+                res.json({ party })
+            })
             .catch(err => res.status(500).send(err))
     } 
 

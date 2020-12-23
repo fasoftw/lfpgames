@@ -15,6 +15,14 @@ module.exports = {
 
     deleteFiltersParty: `delete from party_filters where partyId = ?`,
 
+    searchParty: `select id , spotsFilled, numberPlayers
+    from party
+    where id = ? and isOpen = 1 and deletedAt is null`,
+
     insertNotification: `insert into party_notifications (createdAt, nameParty, notificationId, userId)
-    values (?, ?, ?, ?)`
+    values (?, ?, ?, ?)`,
+
+    searchProfile: 	`select id, name
+    from game_profile as gp
+    where gameId = ? and userId = ? and platformId = ? `
 }

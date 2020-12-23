@@ -13,8 +13,16 @@ module.exports = app => {
             existsOrError(userId, 'Error User Id')
             existsOrError(partyId, 'Error game Id')
 
-            await app.db.raw(queries.searchParty, partyId)
+            app.db.raw(queries.searchParty, partyId)
             .then(res => partyFromDb = res[0])
+
+             await app.db('party')
+            .where({ "id": partyId }).first()
+            .then(res => console.log(res))
+            
+            existsOrError(partyFromDb, 'Platform does not exist') 
+
+            console.log(partyFromDb)
         
 
             existsOrError(partyFromDb, 'Party not founded') 

@@ -13,5 +13,8 @@ module.exports = {
 
     deletePlayers: `delete from party_players where id = ?`,
 
-    deleteFiltersParty: `delete from party_filters where partyId = ?`
+    deleteFiltersParty: `delete from party_filters where partyId = ?`,
+
+    insertNotification: `insert into party_notifications (createdAt, nameParty, notificationId, userId)
+    values (?, ?, ?, ?)`
 }

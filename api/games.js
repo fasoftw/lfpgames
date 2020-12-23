@@ -65,7 +65,7 @@ module.exports = app => {
     }
 
     const get = (req,res) =>{
-         app.db('games')
+        app.db('games')
         .select('*')
         .whereNull('deletedAt')
         .then(games => res.json(games))

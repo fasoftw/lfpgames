@@ -31,7 +31,7 @@ module.exports = app => {
         .get(app.api.games.getById)
 
     app.route('/game/:id/filters')
-    .all(app.config.passport.authenticate())
+        .all(app.config.passport.authenticate())
         .get(app.api.game.filters.get)
     
     app.route('/game/profile/user')
@@ -120,6 +120,18 @@ module.exports = app => {
         .get(app.api.articles.getById)
         .put(app.api.articles.save)
         .delete(app.api.articles.remove)
+
+    app.route('/notifications')
+        .post(app.api.notifications.notifications.save)
+
+    app.route('/notifications/:id')
+        .get(app.api.notifications.notifications.getById)
+        .delete(app.api.notifications.notifications.remove)
+        .put(app.api.notifications.notifications.save)
+
+    app.route('/notifications/user/:id')
+        .get(app.api.notifications.user.getById)
+
 
   
 }

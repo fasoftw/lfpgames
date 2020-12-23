@@ -24,5 +24,8 @@ module.exports = {
     where id = ? and isOpen = 1 and deletedAt is null`,
 
     searchFilters: `select name, id
-    from party_filters where partyId = ? and deletedAt is null`
+    from party_filters where partyId = ? and deletedAt is null`,
+
+    insertNotification: `insert into party_notifications (createdAt, nameParty, notificationId, userId)
+    values (?, ?, ?, ?)`
 }

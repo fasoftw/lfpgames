@@ -124,6 +124,11 @@ module.exports = app => {
                             item], item).then( count => {return count})
                         }
                     )
+                    app.db.raw(queries.insertNotification, [new Date(), party.name, 1, party.userId])
+                    .then(() => {return })
+                    .catch(err => console.log(err))
+
+    
                     res.status(201).send(resposta) 
                 }) 
                 .catch(err => res.status(500).send(err)) 

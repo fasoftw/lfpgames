@@ -32,14 +32,25 @@ module.exports = app => {
 
             if(party.rank) existsOrError(verGameId.rank, 'Error')
 
-            const verPlatformId = await app.db('platforms_games as pg')
-                .join("platforms", "platforms.id", "pg.platformId")
+            await app.db('platforms_games as pg')
+                .select("platformId")
                 .where({ "pg.id": party.platformId }).first()
+                .then(res=> verPlatform = res)
 
-            existsOrError(verPlatformId, 'Error platform.')
+            
+            // existsOrError(party.profiles, 'Error User does not have a Profile.')
+            console.log(party.profiles)
+            if(party.profiles === undefined && party.nickname !== null){
 
-                
-            existsOrError(party.profiles, 'Error User does not have a Profile.')
+                await app.db.raw(queries.addProfile, [new Date(), party.userId, verPlatform.platformId, party.gameId, party.nickname])
+                .then(() => {return})
+                .catch(err => console.log(err))
+            } else if(party.profiles.length >0){
+                app.db('game_profile')
+                .update({name: party.profiles, updatedAt: new Date()})
+                .where({platformId: verPlatform.platformId, userId: party.userId, gameId: party.gameId})
+                .catch(err => console.log(err))
+            }
 
 
         }catch(msg){
@@ -133,13 +144,12 @@ module.exports = app => {
 
                     app.db.raw(queries.insertNotification, [new Date(), party.name, 1, party.userId])
                     .then(() => {return })
-                    .catch(err => console.log(err))
-                    
-                    await app.db.raw(queries.searchParty, result)
-                    .then(res => console.log(res[0]))
+                    .catch(err => {console.log(err)})
+                        
 
-                    await app.db.raw(queries.searchProfile, [party.gameId, party.userId, party.platformId])
+                    await app.db.raw(queries.searchProfile, [party.gameId, party.userId, verPlatform.platformId])
                     .then(res => profile = res[0])
+                    
                     
 
                     const profileJson = profile.map( item=>{

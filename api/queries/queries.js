@@ -22,7 +22,12 @@ module.exports = {
     insertNotification: `insert into party_notifications (createdAt, nameParty, notificationId, userId)
     values (?, ?, ?, ?)`,
 
-    searchProfile: 	`select id, name
-    from game_profile as gp
-    where gameId = ? and userId = ? and platformId = ? `
+    searchProfile:`select game_profile.id as id, game_profile.name as name 
+    from game_profile
+    join platforms ON platforms.id = game_profile.platformId
+    join platforms_games ON platforms_games.platformId = platforms.id
+    where game_profile.gameId = ? and game_profile.userId = ? and game_profile.platformId = ?`,
+
+    addProfile: `insert into game_profile (createdAt, userId, platFormId, gameId, name)
+    VALUES (?, ?, ?,?,?)`
 }

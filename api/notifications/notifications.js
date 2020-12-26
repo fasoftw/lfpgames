@@ -31,12 +31,12 @@ module.exports = app =>{
             }).catch(err => res.status(500).send(err))
 
          } else {
-           
+            let array = req.params.id.split(",");
             app.db('party_notifications')
             .update({
                 readedAt: new Date(),           
             })
-            .where({id: req.params.id})
+            .whereIn('id', array)
             .then( () =>{
                 res.status(201).send()
             }).catch(err => res.status(500).send(err))
@@ -57,11 +57,12 @@ module.exports = app =>{
     }
 
     const remove = async ( req, res)=>{
+        let array = req.params.id.split(",");
         await app.db('party_notifications')
-        .where({id: req.params.id}).del()
+        .whereIn('id', array).del()
         .then(()=>  res.status(204).send())
         .catch(err => {
-
+        console.log(err)
         return res.status(400).send(err)
 
         })

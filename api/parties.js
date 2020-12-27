@@ -37,9 +37,6 @@ module.exports = app => {
                 .where({ "pg.id": party.platformId }).first()
                 .then(res=> verPlatform = res)
 
-            
-            // existsOrError(party.profiles, 'Error User does not have a Profile.')
-            console.log(party.profiles)
             if(party.profiles === undefined && party.nickname !== null){
 
                 await app.db.raw(queries.addProfile, [new Date(), party.userId, verPlatform.platformId, party.gameId, party.nickname])
@@ -151,7 +148,6 @@ module.exports = app => {
                     .then(res => profile = res[0])
                     
                     
-
                     const profileJson = profile.map( item=>{
                         return {id: item.id}
                     })
@@ -205,11 +201,9 @@ module.exports = app => {
             .catch(err => res.status(500).send(err))
     } 
 
-    const remove = async (req,res) =>{
-        const id = req.params.id
-       
+    const remove = async (req,res) =>{       
 
-        app.db('party')
+        await app.db('party')
         .where({id: req.params.id})
         .del()
         .then( () =>

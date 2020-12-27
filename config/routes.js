@@ -102,6 +102,9 @@ module.exports = app => {
         .post(app.api.party.players.save)
         .get(app.api.party.players.getById)
 
+     app.route('/players/:userId&:partyId&:gameId&:platformId')
+        .get(app.api.players.getById)
+
     
     app.route('/party/:partyId/user/:userId')
         .get(app.api.party.players.getByUserId)

@@ -3,26 +3,40 @@ module.exports = app => {
     const limit = 10
     const get = async(req,res)=>{
         const page = req.query.page || 1
+        async function withTransaction(callback) {
+            const trx = await app.db.transaction();
+            try{
 
-        app.db('party as p')
-        .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
-        .join('games as g', 'g.id', 'p.gameId')
-        .join('users', 'users.id', 'p.userId')
-        .join('platforms_games as pg', 'pg.id', 'p.platformId')
-        .join("platforms", "platforms.id", "pg.platformId")
-        .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
-        .limit(limit).offset(page * limit - limit)
-        //.where({isOpen: 1})
-        .where({'p.gameId' : req.params.id})
-        .whereNull('p.deletedAt')
-        .then(parties => {
-            //console.log(parties)
-            parties = parties.map((p, i, array) => partyWithFilters(p, array));
-            parties = withoutDuplicate(parties);
+            
+            const result = await app.db('party as p')
+            .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
+            .join('games as g', 'g.id', 'p.gameId')
+            .join('users', 'users.id', 'p.userId')
+            .join('platforms_games as pg', 'pg.id', 'p.platformId')
+            .join("platforms", "platforms.id", "pg.platformId")
+            .select('p.*', 'pf.id as filterId', 'pf.name as name','users.name as userName', 'p.name as partyName', 'g.maxPlayers as maxPlayers', 'g.rank as gameRank', 'platforms.name as platformName')
+            .limit(limit).offset(page * limit - limit)
+            //.where({isOpen: 1})
+            .where({'p.gameId' : req.params.id})
+            .whereNull('p.deletedAt')
+        
+                    const partiesFilters = result.map((p, i, array) => partyWithFilters(p, array));
 
-            return res.json({parties, limit })
-        })
-        .catch(e => console.log(e));
+                    const parties = withoutDuplicate(partiesFilters);
+
+                    res.json({parties, limit })
+                
+                await trx.commit()
+            
+            }catch (e) {
+            await trx.rollback();
+            throw e;
+            }
+
+   
+   }
+   withTransaction()
+}
 
         const partyWithFilters = (p, parties) => {
             const party = { ...p };
@@ -51,8 +65,6 @@ module.exports = app => {
         }
 
         
-    }
-
+    
     return {get}
-
 }

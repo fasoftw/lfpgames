@@ -21,7 +21,7 @@ module.exports = {
 
     searchParty: `select id , spotsFilled, numberPlayers
     from party
-    where id = ? and isOpen = 1 and deletedAt is null`,
+    where id = ?`,
 
     searchFilters: `select name, id
     from party_filters where partyId = ? and deletedAt is null`,

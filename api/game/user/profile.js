@@ -20,16 +20,23 @@ module.exports = app => {
         }catch(err){
             return res.status(400).send(err)
         }
-        
+    
+
         const platforms = await app.db.raw(queries.platformsGames,[profile.gameId, profile.userId,
             profile.platformId]) 
+
+        let getPlatform = {}
+
+        await app.db.raw(queries.searchPlatform, profile.platformId)
+        .then(res => getPlatform = Object.values(JSON.parse(JSON.stringify(res[0]))))
+
 
         if(!req.params.id && (platforms[0].length == 0)){
 
             profile.createdAt = new Date();
             app.db('game_profile')
             .insert({createdAt: new Date(), name: profile.name, gameId: profile.gameId, 
-                userId: profile.userId, platformId: profile.platformId })
+                userId: profile.userId, platformId: getPlatform[0].id })
             .then(_resposta => {
                 res.status(201).send(_resposta.toString())})
             .catch(err => res.status(500).send(err))
@@ -39,14 +46,14 @@ module.exports = app => {
             profile.updatedAt = new Date();
 
             const profileId = await app.db.raw(queries.searchProfile,[profile.gameId, profile.userId,
-                profile.platformId])
+                getPlatform[0].id])
  
             var profileJson = Object.values(JSON.parse(JSON.stringify(profileId[0])))
 
 
             app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
-                userId: profile.userId, platformId: profile.platformId })
+                userId: profile.userId, platformId: getPlatform[0].id })
             .where({id: profileJson[0].id})
             .then(_resposta => 
                 {
@@ -60,7 +67,7 @@ module.exports = app => {
             profile.updatedAt = new Date();
             app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
-                userId: profile.userId, platformId: profile.platformId })
+                userId: profile.userId, platformId: getPlatform[0].id })
             .where({id: req.params.id})
             .then(_resposta => res.status(201).send(_resposta.toString()))
             .catch(err => res.status(500).send(err))
@@ -75,8 +82,9 @@ module.exports = app => {
         .join("users", "users.id", "game_profile.userId")
         .join("games", "games.id", "game_profile.gameId")
         .join("platforms", "platforms.id", "game_profile.platformId")
-
+        .join("platforms_games", "platforms_games.gameId", "game_profile.gameId")
         .where({"game_profile.userId": req.params.id})
+        .groupBy('game_profile.name')
         .then(filters => {
             res.json(filters)})
         .catch(err => res.status(500).send(err))       
@@ -86,8 +94,6 @@ module.exports = app => {
         const userId = req.params.userId
         const gameId =req.params.gameId
         const platformId = req.params.platformId
-
-        console.log("teste")
         
         app.db("game_profile as gp")
         .join("platforms", "platforms.id", "gp.platformId")
@@ -97,10 +103,8 @@ module.exports = app => {
         .where({"gp.userId": userId})
         .where({"gp.gameId": gameId})
         .where({"pg.Id": platformId})
-        .then(profiles => {
-            console.log(profiles)
-            res.json(profiles)})
-        .catch(err => console.log(err))       
+        .then(profiles => res.json(profiles))
+        .catch(err => res.status(500).send(err))       
     }
 
 

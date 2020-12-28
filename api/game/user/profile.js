@@ -34,7 +34,7 @@ module.exports = app => {
         if(!req.params.id && (platforms[0].length == 0)){
 
             profile.createdAt = new Date();
-            app.db('game_profile')
+            await app.db('game_profile')
             .insert({createdAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: getPlatform[0].id })
             .then(_resposta => {
@@ -51,7 +51,7 @@ module.exports = app => {
             var profileJson = Object.values(JSON.parse(JSON.stringify(profileId[0])))
 
 
-            app.db('game_profile')
+            await app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: getPlatform[0].id })
             .where({id: profileJson[0].id})
@@ -65,7 +65,7 @@ module.exports = app => {
         } else if(req.params.id ){
 
             profile.updatedAt = new Date();
-            app.db('game_profile')
+            await app.db('game_profile')
             .update({updatedAt: new Date(), name: profile.name, gameId: profile.gameId, 
                 userId: profile.userId, platformId: getPlatform[0].id })
             .where({id: req.params.id})
@@ -76,8 +76,8 @@ module.exports = app => {
 
     }
     
-    const get = (req,res) =>{
-        app.db("game_profile")
+    const get = async (req,res) =>{
+        await app.db("game_profile")
         .select('game_profile.*','games.name as gameName', 'platforms.name as platformName')
         .join("users", "users.id", "game_profile.userId")
         .join("games", "games.id", "game_profile.gameId")
@@ -90,12 +90,12 @@ module.exports = app => {
         .catch(err => res.status(500).send(err))       
     }
 
-    const getById = (req,res) =>{
+    const getById = async (req,res) =>{
         const userId = req.params.userId
         const gameId =req.params.gameId
         const platformId = req.params.platformId
         
-        app.db("game_profile as gp")
+        await app.db("game_profile as gp")
         .join("platforms", "platforms.id", "gp.platformId")
         .join("platforms_games as pg", "pg.platformId", "platforms.id")
         .select('gp.id', 'gp.name')

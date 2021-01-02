@@ -27,7 +27,7 @@ module.exports = app => {
     }
 
     const get = async(req, res) =>{
-        const cat = app.db('categories')
+        app.db('categories')
         .select('*')
         .whereNull('deletedAt')
         .then(categories => res.json(categories))

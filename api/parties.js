@@ -134,7 +134,7 @@ module.exports = app => {
                     party.filters.forEach((item) => {
                         app.db.raw(queries.addFilters, [
                                 new Date(),  
-                            resposta[0],
+                            result[0],
                             item], item).then( count => {return count})
                         }
                     )

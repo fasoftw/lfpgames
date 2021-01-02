@@ -1,7 +1,10 @@
+const { json } = require('body-parser')
+const queries = require('./user/queries')
+
 module.exports = app => {
     
     const limit = 10
-    const get = async(req,res)=>{
+    const getById = async(req,res)=>{
         const page = req.query.page || 1
         async function withTransaction(callback) {
             const trx = await app.db.transaction();
@@ -64,7 +67,15 @@ module.exports = app => {
             return $arr;
         }
 
+        const get = async (req,res)=>{
+            await app.db.raw(queries.searchGames)
+            .then( (resp) => {
+                res.json(resp[0])
+            })
+            .catch(err => {return err})
+        }
+
         
     
-    return {get}
+    return {getById,get}
 }

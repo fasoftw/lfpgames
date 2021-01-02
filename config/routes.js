@@ -54,6 +54,9 @@ module.exports = app => {
         .get(app.api.game.platforms.get)
 
     app.route('/game/:id/parties')
+        .get(app.api.game.parties.getById)   
+    
+    app.route('/game/parties')
         .get(app.api.game.parties.get)    
 
 

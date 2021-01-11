@@ -30,6 +30,7 @@ module.exports = app => {
         app.db('categories')
         .select('*')
         .whereNull('deletedAt')
+        .orderBy('name', 'asc')
         .then(categories => res.json(categories))
         .catch(err => res.status(500).send(err))
     }

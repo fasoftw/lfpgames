@@ -46,7 +46,7 @@ module.exports = app => {
         let inTheParty = false
         await app.db('party_players as pp')
         .select('pp.id')
-        .where({partyId: partyId})
+        .where({'pp.partyId': partyId})
         .where({'pp.userId': userId})
         .then( party =>{
             if(party.length >= 1){
@@ -167,9 +167,16 @@ module.exports = app => {
     }
 
     const remove = async ( req, res) =>{  
+        const playerInParty = await app.db('party')
+        .where({userId: req.params.userId})
+
+        if(playerInParty){
+        
         async function withTransaction(callback) {
             const trx = await app.db.transaction();
             try {
+               
+      
                 const result = await app.db('party_players')
                 .where({partyId: req.params.partyId})
                 .where({userId: req.params.userId})
@@ -184,16 +191,17 @@ module.exports = app => {
                     }
                     res.sendStatus(201)
                     
-                    trx.commit
+                    trx.commit()
 
                 }catch(err) {
-                    trx.rollback
+                    trx.rollback()
                     console.log(err)
                     res.status(500).send(err)
                 }
             }
 
             withTransaction()
+        }
     }
 
   

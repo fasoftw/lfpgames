@@ -19,7 +19,7 @@ module.exports = {
     from game_profile where userId = ? and gameId = ? and platformId = ? 
     and deletedAt is null`,
 
-    searchParty: `select id , spotsFilled, numberPlayers
+    searchParty: `select id , spotsFilled, numberPlayers, name
     from party
     where id = ?`,
 

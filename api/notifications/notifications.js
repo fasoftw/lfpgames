@@ -4,7 +4,6 @@ module.exports = app =>{
 
     const save = async (req,res) =>{
         const notification = {...req.body}
-        console.log(notification)
 
         try{
 
@@ -46,13 +45,18 @@ module.exports = app =>{
 
     //by id user
     const getById = async (req,res) =>{
-        
+        const limit = 5
+        const page = req.query.page || 1
+
+
+
          await app.db('party_notifications as pn')
         .join('notifications', 'notifications.id', 'pn.notificationId')
         .where({ 'pn.userId': req.params.id})
         .select('notifications.*', 'pn.readedAt','pn.id as notificationID','pn.nameParty as partyName','pn.createdAt')         
+        .limit(limit).offset(page * limit - limit)
         .orderBy('createdAt', 'desc')
-        .then(not=> res.json(not))
+        .then(not=> res.json({not,limit}))
         .catch(err => console.log(err))
     }
 

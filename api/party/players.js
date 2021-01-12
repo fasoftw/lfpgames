@@ -11,7 +11,7 @@ module.exports = app => {
         const userId = party.playerId
         const partyId = req.params.id
 
-        let partyFromDb, profile
+        let partyFromDb, profile,partyJson
         try{
             existsOrError(userId, 'Error User Id')
             existsOrError(partyId, 'Error game Id')
@@ -36,7 +36,7 @@ module.exports = app => {
             await app.db.raw(queries.searchParty, partyId)
             .then(res => partyFromDb = res[0])
     
-            var partyJson = Object.values(JSON.parse(JSON.stringify(partyFromDb)))
+            partyJson = Object.values(JSON.parse(JSON.stringify(partyFromDb)))
 
 
         }catch(err){
@@ -95,7 +95,13 @@ module.exports = app => {
       
                         return res
                     })
-                    .catch(err => {return err})           
+                    .catch(err => {return err})                     
+
+                    await app.db.raw(queries.insertNotification, [new Date(), partyJson[0].name, 4,
+                     userId])
+                    .then(() => {return })
+                    .catch(err => {console.log(err)})
+                    
 
                     await plyr.commit();
 
@@ -170,6 +176,8 @@ module.exports = app => {
         const playerInParty = await app.db('party')
         .where({userId: req.params.userId})
 
+        let party = {}
+
         if(playerInParty){
         
         async function withTransaction(callback) {
@@ -190,6 +198,16 @@ module.exports = app => {
                         .catch((err) => console.log(err)) 
                     }
                     res.sendStatus(201)
+
+                    await app.db.raw(queries.searchParty, [req.params.partyId])
+                    .then( res=> party = res[0])
+
+                    partyJson = Object.values(JSON.parse(JSON.stringify(party)))
+
+                    await app.db.raw(queries.insertNotification, [new Date(), partyJson[0].name, 5,
+                     req.params.userId])
+                    .then(() => {return })
+                    .catch(err => {console.log(err)})
                     
                     trx.commit()
 

@@ -57,7 +57,8 @@ module.exports = app => {
         .get(app.api.game.parties.getById)   
     
     app.route('/game/parties')
-        .get(app.api.game.parties.get)    
+        .get(app.api.game.parties.get)
+        .post(app.api.game.parties.save)
 
 
     app.route('/platforms')

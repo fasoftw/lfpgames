@@ -6,6 +6,7 @@ module.exports = app => {
 
     const save = async (req,res) => {
         const party = {...req.body}
+        party.numberPlayers = Number(party.numberPlayers) +1
         if(req.params.id) party.id = req.params.id
         try{
             existsOrError(party.name,'Nome da party não informado.')
@@ -13,10 +14,6 @@ module.exports = app => {
             existsOrError(party.gameId,'Jogo não informado.')
             existsOrError(party.platformId,'Plataforma não informado.')
             existsOrError(party.numberPlayers,'Numero de players não informado.')
-
-/*            const verNameParty = await app.db('party')
-                .where({ name: party.name }).first()
-            existsOrError(verNameParty, 'O Nome do grupo já existe.')  */
 
             const verUserId = await app.db('users')
                 .where({ id: party.userId })

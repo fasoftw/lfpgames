@@ -1,8 +1,9 @@
-const { json } = require('body-parser')
+
 const queries = require('./user/queries')
 
+
 module.exports = app => {
-    
+    const { existsOrError }  = app.api.validation
     const limit = 10
     const getById = async(req,res)=>{
         const page = req.query.page || 1
@@ -21,7 +22,7 @@ module.exports = app => {
             .limit(limit).offset(page * limit - limit)
             //.where({isOpen: 1})
             .where({'p.gameId' : req.params.id})
-            .whereNull('p.deletedAt')
+            //.whereNull('p.deletedAt')
         
                     const partiesFilters = result.map((p, i, array) => partyWithFilters(p, array));
 
@@ -75,7 +76,43 @@ module.exports = app => {
             .catch(err => {return err})
         }
 
+        const save = async(req,res) =>{
+            const party = {...req.body}
+
+
+            try{
+
+    
+                existsOrError(party.id, 'Error data ')
+
+            }catch(err){
+               return res.status(400).send(err)
+            }
+
+            if(party.ready === 0){
+
+                await app.db('party')
+                .update({ready: 1,updatedAt: new Date()})
+                .where({id: party.id})
+                .then( () =>{
+                    res.status(201).send() 
+                }).catch(err =>{
+                    res.status(500).send() 
+                })
+            } else if(party.ready === 1){
+                await app.db('party')
+                .update({deletedAt: new Date()})
+                .where({id: party.id})
+                .then( () =>{
+                    res.status(201).send() 
+                }).catch(err =>{
+                    res.status(500).send() 
+                })
+            }
+
+        }
+
         
     
-    return {getById,get}
+    return {getById,get,save}
 }

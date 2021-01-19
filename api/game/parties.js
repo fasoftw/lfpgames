@@ -4,15 +4,16 @@ const queries = require('./user/queries')
 
 module.exports = app => {
     const { existsOrError }  = app.api.validation
-    const limit = 10
+    const limit = 20
     const getById = async(req,res)=>{
         const page = req.query.page || 1
         async function withTransaction(callback) {
             const trx = await app.db.transaction();
+            let result = []
             try{
 
             
-            const result = await app.db('party as p')
+            result = await app.db('party as p')
             .leftJoin('party_filters as pf', 'pf.partyId', 'p.id')
             .join('games as g', 'g.id', 'p.gameId')
             .join('users', 'users.id', 'p.userId')
@@ -23,6 +24,7 @@ module.exports = app => {
             //.where({isOpen: 1})
             .where({'p.gameId' : req.params.id})
             //.whereNull('p.deletedAt')
+      
         
                     const partiesFilters = result.map((p, i, array) => partyWithFilters(p, array));
 
@@ -31,11 +33,16 @@ module.exports = app => {
                     res.json({parties, limit })
                 
                 await trx.commit()
+                
             
             }catch (e) {
             await trx.rollback();
             throw e;
             }
+
+          
+
+
 
    
    }

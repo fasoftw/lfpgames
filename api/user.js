@@ -22,6 +22,7 @@ module.exports = app => {
             
             
             existsOrError(user.name, 'Nome não informado')
+            existsOrError(user.lastName, 'Nome não informado')
             existsOrError(user.email, 'Email não informado')
             existsOrError(user.password, 'Senha não informada')
             existsOrError(user.confirmPassword, 'Confirmação de senha não informada')
@@ -67,7 +68,7 @@ module.exports = app => {
 
     const get = ( req, res ) =>{
         app.db('users')
-            .select('id', 'name', 'email', 'password', 'admin')
+            .select('id', 'name', 'lastName', 'email', 'password', 'admin')
             .whereNull('deletedAt')
             .then(users => res.json(users))
             .catch(err => res.status(500).send(err))
@@ -75,7 +76,7 @@ module.exports = app => {
 
     const getById = ( req, res ) =>{
         app.db('users')
-            .select('id', 'name', 'email', 'password', 'admin')
+            .select('id', 'name', 'lastName', 'email', 'password', 'admin')
             .where({id: req.params.id})
             .whereNull('deletedAt')
             .first()

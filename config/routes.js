@@ -60,6 +60,10 @@ module.exports = app => {
         .get(app.api.game.parties.get)
         .post(app.api.game.parties.save)
 
+    app.route('/game/categories')
+        .get(app.api.game.categories.get)
+   
+
 
     app.route('/platforms')
     .all(app.config.passport.authenticate())
@@ -81,6 +85,10 @@ module.exports = app => {
     .all(app.config.passport.authenticate())
         .post(app.api.filters.save)
         .get(app.api.filters.get)
+
+    app.route('/game/:id/parties/filters')
+    .all(app.config.passport.authenticate())
+        .get(app.api.party.filters.getById)
 
 
     app.route('/parties')

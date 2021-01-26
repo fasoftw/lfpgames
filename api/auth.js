@@ -6,20 +6,28 @@ const bcrypt = require('bcrypt-nodejs')
 
 module.exports = app => {
     const signIn = async (req, res) => {
-        if( !req.body.email || !req.body.password ){
-            return res.status(400).send('Informe usuário ou senha!')
+        if(!req.body.email ){
+            return res.status(400).send('Enter your email')
+        }
+
+        if(!req.body.password ){
+            return res.status(400).send('Enter your password')
         }
 
         const user = await app.db('users')
             .where({ email: req.body.email })
             .first()
+
         
-        if( !user ) return res.status(400).send('USUÁRIO NÃO ENCONTRADO!')
+        if( !user ) {
+            return res.status(400).send('We cannot find an account with that email address')
+        }
 
         const isMatch = bcrypt.compareSync(req.body.password, user.password)
 
-        
-        if (!isMatch) return res.status(401).send('Senha inválidos!')
+        if (!isMatch) {
+            return res.status(400).send('Password incorrect')
+        }
 
 
         const now = Math.floor(Date.now() / 1000)

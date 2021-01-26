@@ -1,3 +1,7 @@
+var passwordValidator = require('password-validator');
+var schema = new passwordValidator();
+
+
 module.exports = app => {
 
     function existsOrError( value, msg ){
@@ -20,6 +24,42 @@ module.exports = app => {
     }
 
 
+    function passwordVal(valueA){
+        
+        console.log(valueA)
 
-    return {existsOrError, notExistsOrError, equalsOrError}
+        schema
+            .is().min(6)                                    // Minimum length 6
+            .is().max(20)                                  // Maximum length 20
+            .has().uppercase()                            // Must have uppercase letters
+ //           .has().lowercase()                             // Must have lowercase letters
+            .has().not().spaces()                           // Should not have spaces
+        
+        let passwordVal = schema.validate(valueA) 
+
+        if(passwordVal === false){
+            let list = schema.validate(valueA, { list: true })
+
+            console.log(list)
+
+            list.forEach( (fail) => {
+                if(fail === 'min'){
+                    throw 'Passwords must be at least 6 characters'
+                }else if( fail === 'max'){
+                    throw 'Password must not have contain more than 20 characters'
+                }else if( fail === 'uppercase'){
+                    throw 'Password must have at least 1 uppercase letter(s)'
+                }else if( fail === 'spaces'){
+                    throw 'Password must not contain spaces'
+                }
+            })
+        }else{
+            return
+        }
+    }
+
+
+
+
+    return {existsOrError, notExistsOrError, equalsOrError, passwordVal}
 }

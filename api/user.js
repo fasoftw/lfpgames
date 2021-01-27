@@ -19,18 +19,32 @@ module.exports = app => {
 
         
         try{
-            
+        
             
             existsOrError(user.name, 'Enter your first name')
             existsOrError(user.lastName, 'Enter your last name')
             existsOrError(user.email, 'Enter your email')
-            existsOrError(user.password, 'Enter your password')
-            existsOrError(user.confirmPassword, 'Enter your password')
-            equalsOrError(user.password, user.confirmPassword, 'Passwords must match')
+            
+            if(!user.id){
+                
+                existsOrError(user.password, 'Enter your password')
+                existsOrError(user.confirmPassword, 'Enter your password')
+                equalsOrError(user.password, user.confirmPassword, 'Passwords must match')
+                passwordVal(user.password)
 
-            passwordVal(user.password)
+            } else if(user.id && user.password !== null){
 
+                existsOrError(user.password, 'Enter your password')
+                existsOrError(user.confirmPassword, 'Enter your password')
+                equalsOrError(user.password, user.confirmPassword, 'Passwords must match')
+                passwordVal(user.password)
+            }
+            
+           
 
+           
+
+            
 
             const userFromDB = await app.db('users')
                 .where({ email: user.email }).first()
@@ -51,11 +65,20 @@ module.exports = app => {
         delete user.confirmPassword
 
         if(user.id){
-            app.db('users')
+            if(user.password === null){
+                app.db('users')
+                .update({name: user.name, lastName: user.lastName, email: user.email})
+                .where({id: user.id})
+                .then(_ => res.status(204).send()) 
+                .catch(err => res.status(500).send(err)) 
+            } else{
+                app.db('users')
                 .update(user)
                 .where({id: user.id})
                 .then(_ => res.status(204).send()) 
                 .catch(err => res.status(500).send(err)) 
+            }
+            
 
         }else{
             app.db('users')

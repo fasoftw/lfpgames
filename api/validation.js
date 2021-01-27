@@ -25,8 +25,7 @@ module.exports = app => {
 
 
     function passwordVal(valueA){
-        
-        console.log(valueA)
+    
 
         schema
             .is().min(6)                                    // Minimum length 6
@@ -40,7 +39,6 @@ module.exports = app => {
         if(passwordVal === false){
             let list = schema.validate(valueA, { list: true })
 
-            console.log(list)
 
             list.forEach( (fail) => {
                 if(fail === 'min'){
